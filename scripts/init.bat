@@ -31,9 +31,15 @@ set pypircFile=%userprofile%\.pypirc
 if not exist %pypircFile%(
 	del %pypircFile%
 
+    rem token认证方式
+	rem echo [pypi]>>%pypircFile%
+	rem echo username = __token__>>%pypircFile%
+	rem echo password = pypi-AgEIcHlwaS5vcmcCJDU2Njk5NzczLWU1ZDktNDg5My1hMmMxLTA1Njg3Mjk2ZmM1YQACJXsicGVybWlzc2lvbnMiOiAidXNlciIsICJ2ZXJzaW9uIjogMX0AAAYgppv_-FkdstNmqpBVXZ3o5sXNuo1i2cXgiFM7WD9KKBU>>%pypircFile%
+
+    rem 用户密码认证方式
 	echo [pypi]>>%pypircFile%
-	echo username = __token__>>%pypircFile%
-	echo password = pypi-AgEIcHlwaS5vcmcCJDU2Njk5NzczLWU1ZDktNDg5My1hMmMxLTA1Njg3Mjk2ZmM1YQACJXsicGVybWlzc2lvbnMiOiAidXNlciIsICJ2ZXJzaW9uIjogMX0AAAYgppv_-FkdstNmqpBVXZ3o5sXNuo1i2cXgiFM7WD9KKBU>>%pypircFile%
+	echo username = kancypython>>%pypircFile%
+	echo password = kan******861>>%pypircFile%
 )
 
 @echo on

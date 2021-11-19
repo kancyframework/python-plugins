@@ -18,9 +18,12 @@ from setuptools import find_packages, setup, Command
 # 上传到Pypi仓库：python setup.py deploy 或者 python setup.py upload
 # 上传到Pypi仓库并创建Git Tag：python setup.py publish
 
+# 查看本地模块：pip list
+# 卸载本地模块：pip uninstall xxx
+
 # Package meta-data.
 NAME = 'confer'
-VERSION = '0.0.2'
+VERSION = '0.0.3'
 DESCRIPTION = '配置文件解析器。'
 URL = 'https://github.com/kancyframework/python-plugins/confer'
 EMAIL = '793272861@qq.com'
@@ -29,11 +32,6 @@ AUTHOR = 'kancy'
 # 额外单独模块
 SINGLE_EXTRAS_MODULES = [
     'confer'
-]
-
-# 控制台脚本小工具
-CONSOLE_SCRIPTS = [
-    # 'kancyer=kancyer:main',
 ]
 
 # 强制的依赖包
@@ -45,6 +43,11 @@ REQUIRED = [
 EXTRAS = {
     # 'fancy feature': ['django'],
 }
+
+# 控制台脚本小工具
+CONSOLE_SCRIPTS = [
+    # 'kancyer=kancyer:main',
+]
 
 
 # ======================================用户自定义数据结束=============================================

@@ -18,22 +18,20 @@ from setuptools import find_packages, setup, Command
 # 上传到Pypi仓库：python setup.py deploy 或者 python setup.py upload
 # 上传到Pypi仓库并创建Git Tag：python setup.py publish
 
+# 查看本地模块：pip list
+# 卸载本地模块：pip uninstall xxx
+
 # Package meta-data.
-NAME = 'dingtalk'
+NAME = '模块名称'
 VERSION = '0.0.1'
-DESCRIPTION = '钉钉机器人客户端工具。'
-URL = 'https://github.com/kancyframework/python-plugins/dingtalk-client'
+DESCRIPTION = '模块简单的描述。'
+URL = 'https://github.com/kancyframework/python-plugins'
 EMAIL = '793272861@qq.com'
 AUTHOR = 'kancy'
 
 # 额外单独模块
 SINGLE_EXTRAS_MODULES = [
-    'dingtalk'
-]
-
-# 控制台脚本小工具
-CONSOLE_SCRIPTS = [
-    # 'kancyer=kancyer:main',
+    'demo'
 ]
 
 # 强制的依赖包
@@ -46,6 +44,10 @@ EXTRAS = {
     # 'fancy feature': ['django'],
 }
 
+# 控制台脚本小工具
+CONSOLE_SCRIPTS = [
+    # 'kancyer=kancyer:main',
+]
 
 # ======================================用户自定义数据结束=============================================
 
