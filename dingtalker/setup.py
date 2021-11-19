@@ -25,7 +25,7 @@ from setuptools import find_packages, setup, Command
 NAME = 'dingtalker'
 VERSION = '0.0.3'
 DESCRIPTION = '钉钉机器人客户端工具。'
-URL = 'https://github.com/kancyframework/python-plugins/dingtalker'
+URL = 'https://github.com/kancyframework/python-plugins/tree/main/dingtalker'
 EMAIL = '793272861@qq.com'
 AUTHOR = 'kancy'
 

@@ -25,7 +25,7 @@ from setuptools import find_packages, setup, Command
 NAME = 'confer'
 VERSION = '0.0.3'
 DESCRIPTION = '配置文件解析器。'
-URL = 'https://github.com/kancyframework/python-plugins/confer'
+URL = 'https://github.com/kancyframework/python-plugins/tree/main/confer'
 EMAIL = '793272861@qq.com'
 AUTHOR = 'kancy'
 
