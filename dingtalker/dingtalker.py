@@ -188,7 +188,9 @@ class DingTalker:
         import confer
 
         if not configFilePath:
-            files = ['dingtalker.ini', 'dingtalk-client.ini', 'dingtalk.ini']
+            userHome = str(os.path.expanduser('~')).replace("\\", "/")
+            files = ['dingtalker.ini', 'dingtalk-client.ini', 'dingtalk.ini',
+                     f'{userHome}/dingtalker.ini', f'{userHome}/dingtalk-client.ini', f'{userHome}/dingtalk.ini']
             for file in files:
                 if os.access(file, os.F_OK):
                     configFilePath = file

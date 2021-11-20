@@ -22,26 +22,26 @@ from setuptools import find_packages, setup, Command
 # 卸载本地模块：pip uninstall xxx
 
 # Package meta-data.
-NAME = 'dingtalker'
-VERSION = '0.0.4'
-DESCRIPTION = '钉钉机器人客户端工具。'
-URL = 'https://github.com/kancyframework/python-plugins/tree/main/dingtalker'
+NAME = 'fileer'
+VERSION = '0.0.1'
+DESCRIPTION = '一个文件操作工具类。'
+URL = 'https://github.com/kancyframework/python-plugins/tree/main/fileer'
 EMAIL = '793272861@qq.com'
-AUTHOR = 'kancy'
+AUTHOR = 'filer'
 
 # 额外单独模块
 SINGLE_EXTRAS_MODULES = [
-    'dingtalker'
+    'fileer'
 ]
 
 # 强制的依赖包
 REQUIRED = [
-    'requests',
+    # 'shutil'
 ]
 
 # 可选的依赖包
 EXTRAS = {
-    'dingtalker client manager feature': ['confer'],
+     'shutil feature': ['shutil'],
 }
 
 # 控制台脚本小工具
