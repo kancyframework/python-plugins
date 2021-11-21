@@ -23,7 +23,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'sfer'
-VERSION = '0.0.1'
+VERSION = '0.0.2'
 DESCRIPTION = '一个算法操作工具类。'
 URL = 'https://github.com/kancyframework/python-plugins/tree/main/sfer'
 EMAIL = '793272861@qq.com'
