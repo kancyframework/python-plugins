@@ -22,16 +22,16 @@ from setuptools import find_packages, setup, Command
 # 卸载本地模块：pip uninstall xxx
 
 # Package meta-data.
-NAME = 'fileer'
+NAME = 'randomer'
 VERSION = '0.0.2'
-DESCRIPTION = '一个文件操作工具类。'
-URL = 'https://github.com/kancyframework/python-plugins/tree/main/fileer'
+DESCRIPTION = '一个随机数操作工具类。'
+URL = 'https://github.com/kancyframework/python-plugins/tree/main/randomer'
 EMAIL = '793272861@qq.com'
 AUTHOR = 'kancy'
 
 # 额外单独模块
 SINGLE_EXTRAS_MODULES = [
-    'fileer'
+    'randomer'
 ]
 
 # 强制的依赖包

@@ -22,16 +22,16 @@ from setuptools import find_packages, setup, Command
 # 卸载本地模块：pip uninstall xxx
 
 # Package meta-data.
-NAME = 'fileer'
+NAME = 'timeer'
 VERSION = '0.0.2'
-DESCRIPTION = '一个文件操作工具类。'
-URL = 'https://github.com/kancyframework/python-plugins/tree/main/fileer'
+DESCRIPTION = '一个时间操作工具类。'
+URL = 'https://github.com/kancyframework/python-plugins/tree/main/timeer'
 EMAIL = '793272861@qq.com'
 AUTHOR = 'kancy'
 
 # 额外单独模块
 SINGLE_EXTRAS_MODULES = [
-    'fileer'
+    'timeer'
 ]
 
 # 强制的依赖包

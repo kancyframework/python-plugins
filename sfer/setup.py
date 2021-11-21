@@ -22,16 +22,16 @@ from setuptools import find_packages, setup, Command
 # 卸载本地模块：pip uninstall xxx
 
 # Package meta-data.
-NAME = 'fileer'
-VERSION = '0.0.2'
-DESCRIPTION = '一个文件操作工具类。'
-URL = 'https://github.com/kancyframework/python-plugins/tree/main/fileer'
+NAME = 'sfer'
+VERSION = '0.0.1'
+DESCRIPTION = '一个算法操作工具类。'
+URL = 'https://github.com/kancyframework/python-plugins/tree/main/sfer'
 EMAIL = '793272861@qq.com'
 AUTHOR = 'kancy'
 
 # 额外单独模块
 SINGLE_EXTRAS_MODULES = [
-    'fileer'
+    'sfer','aes256'
 ]
 
 # 强制的依赖包
@@ -41,7 +41,7 @@ REQUIRED = [
 
 # 可选的依赖包
 EXTRAS = {
-     # 'shutil feature': ['shutil'],
+     'aes feature': ['pycryptodomex'],
 }
 
 # 控制台脚本小工具
