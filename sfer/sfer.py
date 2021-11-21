@@ -158,7 +158,7 @@ class Aes:
         """
         return self.encryptBase64(data, password, iv, encoding).decode()
 
-    def decrypt(self, data, password, iv: str = None, encoding='utf-8') -> str:
+    def decrypt(self, data, password=None, iv: str = None, encoding='utf-8') -> str:
         """
         解密数据
         :param data: base64加密数据
@@ -180,7 +180,7 @@ class Aes:
         """
         return base64.b64encode(self.encryptBytes(data, password, iv, encoding))
 
-    def decryptBase64(self, base64Data, password, iv: str = None, encoding='utf-8') -> bytes:
+    def decryptBase64(self, base64Data, password=None, iv: str = None, encoding='utf-8') -> bytes:
         """
         解密数据
         :param base64Data: 加密后的base64字节数组
@@ -208,7 +208,7 @@ class Aes:
         cipher = AES.new(password.encode(encoding), AES.MODE_CBC, iv.encode(encoding))
         return cipher.encrypt(self.__pkcs7_padding(data, encoding))
 
-    def decryptBytes(self, dataBytes, password, iv: str = None, encoding='utf-8') -> bytes:
+    def decryptBytes(self, dataBytes, password=None, iv: str = None, encoding='utf-8') -> bytes:
         """
         解密字节数组
         :param dataBytes: 加密后的字节数组
