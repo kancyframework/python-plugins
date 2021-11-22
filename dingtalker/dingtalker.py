@@ -86,6 +86,7 @@ class DingTalkClient:
                 newTemplateVariables['__encoding'] = encoding
                 newTemplateVariables['__today'] = datetime.date.today().strftime("%Y-%m-%d")
                 markdownText = markdownFileData.format_map(newTemplateVariables)
+                del newTemplateVariables
                 return self.sendMarkdown(title, markdownText, at, atAll)
             raise FileNotFoundError(f"file content is blank : {filePath}")
         raise FileNotFoundError(f"file not found : {filePath}")
@@ -186,6 +187,7 @@ class DingTalkClient:
                 newTemplateVariables['__encoding'] = encoding
                 newTemplateVariables['__today'] = datetime.date.today().strftime("%Y-%m-%d")
                 markdownText = markdownFileData.format_map(newTemplateVariables)
+                del newTemplateVariables
                 return self.sendActionCard(title, markdownText, btns, at, atAll)
             raise FileNotFoundError(f"file content is blank : {filePath}")
         raise FileNotFoundError(f"file not found : {filePath}")
