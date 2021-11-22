@@ -1,4 +1,5 @@
 import base64
+import datetime
 import hashlib
 import hmac
 import re
@@ -22,7 +23,14 @@ class DingTalkClient:
 
     def sendText(self, content: str, at: (list, set, tuple, str) = None, atAll: bool = False, headers=None):
         """
-        :at 参数可以是数组，也可以是使用逗号分隔的字符串
+        发送普通文本消息
+        :param client: 客户端
+        :param content: 文本内容
+        :param at: @某人 数组/字符串
+            如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+        :param atAll: 是否@所有人
+        :param headers: 额外请求头信息，通用不用关心
+        :return:
         """
         jsonBody = {
             "msgtype": "text",
@@ -35,8 +43,15 @@ class DingTalkClient:
     def sendMarkdown(self, title: str, markdownText: str, at: (list, set, tuple, str) = None, atAll: bool = False,
                      headers=None):
         """
-        :at 参数可以是数组，也可以是使用逗号分隔的字符串
-        """
+          发送markdown富文本消息
+          :param title: 消息标题
+          :param markdownText: markdown内容
+          :param at: @某人 数组/字符串
+              如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+          :param atAll: 是否@所有人
+          :param headers: 额外请求头信息，通用不用关心
+          :return:
+          """
         jsonBody = {
             "msgtype": "markdown",
             "markdown": {
@@ -46,11 +61,49 @@ class DingTalkClient:
             "at": {"atMobiles": self.__toList(at), "isAtAll": atAll}}
         return self.send(jsonBody, headers)
 
+    def sendMarkdownFile(self, title: str, filePath: str, at: (list, set, tuple, str) = None, atAll: bool = False,
+                         encoding: str = 'utf-8', **templateVariables):
+        """
+        发送markdown富文本消息（模板文件）
+        :param title: 消息标题
+        :param filePath: markdown模板文件内容
+        :param at: @某人 数组/字符串
+            如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+        :param atAll: 是否@所有人
+        :param encoding: 模板文件编码
+        :param templateVariables: 模板变量
+        :return:
+        """
+        if os.path.exists(filePath) and os.path.isfile(filePath):
+            with open(filePath, 'r', encoding=encoding) as f:
+                markdownFileData = f.read()
+            if len(markdownFileData.strip()) > 0:
+                newTemplateVariables = dict(templateVariables)
+                newTemplateVariables['__title'] = title
+                newTemplateVariables['__filePath'] = os.path.abspath(filePath)
+                newTemplateVariables['__at'] = at
+                newTemplateVariables['__atAll'] = atAll
+                newTemplateVariables['__encoding'] = encoding
+                newTemplateVariables['__today'] = datetime.date.today().strftime("%Y-%m-%d")
+                markdownText = markdownFileData.format_map(newTemplateVariables)
+                return self.sendMarkdown(title, markdownText, at, atAll)
+            raise FileNotFoundError(f"file content is blank : {filePath}")
+        raise FileNotFoundError(f"file not found : {filePath}")
+
     def sendLink(self, title: str, text: str, messageUrl: str, picUrl: str, at: (list, set, tuple, str) = None,
                  atAll: bool = False,
                  headers=None):
         """
-        :at 参数可以是数组，也可以是使用逗号分隔的字符串
+        发送Link钉钉消息
+        :param title: 消息标题
+        :param text: 文本内容
+        :param messageUrl: 消息跳转链接
+        :param picUrl: 消息的图片地址
+        :param at: @某人 数组/字符串
+            如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+        :param atAll: 是否@所有人
+        :param headers: 额外请求头信息，通用不用关心
+        :return:
         """
         jsonBody = {
             "msgtype": "link",
@@ -64,15 +117,22 @@ class DingTalkClient:
         }
         return self.send(jsonBody, headers)
 
-    def sendActionCard(self, title: str, text: str, btns: (list, set, tuple) = None, at: (list, set, tuple, str) = None,
+    def sendActionCard(self, title: str, markdownText: str, btns: (list, set, tuple) = None,
+                       at: (list, set, tuple, str) = None,
                        atAll: bool = False,
                        headers=None):
         """
-        :at 参数可以是数组，也可以是使用逗号分隔的字符串
-        :btns 格式 : [
-                         ("内容不错", "https://www.cnblogs.com/kancy/p/13470386.html"),
-                         ("不感兴趣", "https://www.cnblogs.com/kancy/p/13912443.html")
-                    ]
+        发送ActionCard钉钉消息
+        :param title: 消息标题
+        :param markdownText: 文本内容
+        :param btns: 按钮列表
+            格式 : [("内容不错", "https://www.cnblogs.com/kancy/p/13470386.html"),
+                   ("不感兴趣", "https://www.cnblogs.com/kancy/p/13912443.html")]
+        :param at: @某人 数组/字符串
+            如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+        :param atAll: 是否@所有人
+        :param headers: 额外请求头信息，通用不用关心
+        :return:
         """
         realBtns = []
         if btns:
@@ -87,7 +147,7 @@ class DingTalkClient:
             "msgtype": "actionCard",
             "actionCard": {
                 "title": f"{title}",
-                "text": f"{text}",
+                "text": f"{markdownText}",
                 "btns": realBtns,
                 "btnOrientation": "1",
                 "hideAvatar": "0"
@@ -96,17 +156,55 @@ class DingTalkClient:
         }
         return self.send(jsonBody, headers)
 
+    def sendActionCardFile(self, title: str, filePath: str, btns: (list, set, tuple) = None,
+                           at: (list, set, tuple, str) = None,
+                           atAll: bool = False, encoding: str = 'utf-8', **templateVariables):
+        """
+        发送ActionCard钉钉消息（模板文件）
+        :param title: 消息标题
+        :param filePath: markdown模板文件路径
+        :param btns: 按钮列表
+            格式 : [("内容不错", "https://www.cnblogs.com/kancy/p/13470386.html"),
+                   ("不感兴趣", "https://www.cnblogs.com/kancy/p/13912443.html")]
+        :param at: @某人 数组/字符串
+            如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+        :param atAll: 是否@所有人
+        :param encoding: 模板文件编码
+        :param templateVariables: 模板文件变量
+        :return:
+        """
+        if os.path.exists(filePath) and os.path.isfile(filePath):
+            with open(filePath, 'r', encoding=encoding) as f:
+                markdownFileData = f.read()
+            if len(markdownFileData.strip()) > 0:
+                newTemplateVariables = dict(templateVariables)
+                newTemplateVariables['__title'] = title
+                newTemplateVariables['__filePath'] = os.path.abspath(filePath)
+                newTemplateVariables['__at'] = at
+                newTemplateVariables['__atAll'] = atAll
+                newTemplateVariables['__btns'] = btns
+                newTemplateVariables['__encoding'] = encoding
+                newTemplateVariables['__today'] = datetime.date.today().strftime("%Y-%m-%d")
+                markdownText = markdownFileData.format_map(newTemplateVariables)
+                return self.sendActionCard(title, markdownText, btns, at, atAll)
+            raise FileNotFoundError(f"file content is blank : {filePath}")
+        raise FileNotFoundError(f"file not found : {filePath}")
+
     def sendFeedCard(self, links: (list, set, tuple), at: (list, set, tuple, str) = None, atAll: bool = False,
                      headers=None):
         """
-        :at 参数可以是数组，也可以是使用逗号分隔的字符串
-        :links 格式 : [
-                        ("定位占用CPU较高的进程、线程、代码位置？", "https://www.cnblogs.com/kancy/p/13470386.html",
-                         "https://img1.baidu.com/it/u=3312920655,3266355600&fm=26&fmt=auto"),
-                        ("浅谈我对DDD领域驱动设计的理解", "https://www.cnblogs.com/kancy/p/13425737.html"),
-                        ("单元测试之PowerMock", "https://www.cnblogs.com/kancy/p/13912443.html"),
-                        ("正确创建索引和索引失效", "https://www.cnblogs.com/kancy/p/13460140.html")
-                    ]
+        发送FeedCard钉钉消息
+        :param links: 图文链接列表
+            格式 : [("定位占用CPU较高的进程、线程、代码位置？", "https://www.cnblogs.com/kancy/p/13470386.html",
+                    "https://img1.baidu.com/it/u=3312920655,3266355600&fm=26&fmt=auto"),
+                    ("浅谈我对DDD领域驱动设计的理解", "https://www.cnblogs.com/kancy/p/13425737.html"),
+                    ("单元测试之PowerMock", "https://www.cnblogs.com/kancy/p/13912443.html"),
+                    ("正确创建索引和索引失效", "https://www.cnblogs.com/kancy/p/13460140.html")]
+        :param at: @某人 数组/字符串
+            如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+        :param atAll: 是否@所有人
+        :param headers: 额外请求头信息，通用不用关心
+        :return:
         """
         realLinks = []
         if links:
@@ -127,6 +225,12 @@ class DingTalkClient:
         return self.send(jsonBody, headers)
 
     def send(self, jsonBody, headers=None):
+        """
+        发送钉钉消息请求
+        :param jsonBody: 消息请求体
+        :param headers: 请求头
+        :return:
+        """
         if not headers:
             headers = {"Content-Type": "application/json ;charset=utf-8 "}
         url = self.__getServiceUrl()
@@ -205,6 +309,16 @@ class DingTalker:
 
     def sendText(self, client: str, content: str, at: (list, set, tuple, str) = None, atAll: bool = False,
                  headers=None):
+        """
+        发送普通文本消息
+        :param client: 客户端
+        :param content: 文本内容
+        :param at: @某人 数组/字符串
+            如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+        :param atAll: 是否@所有人
+        :param headers: 额外请求头信息，通用不用关心
+        :return:
+        """
         dingTalkClient = self.__findDingTalkClient(client)
         if dingTalkClient:
             dingTalkClient.sendText(content, at, atAll, headers)
@@ -213,56 +327,134 @@ class DingTalker:
                      atAll: bool = False,
                      headers=None):
         """
-        :at 参数可以是数组，也可以是使用逗号分隔的字符串
+        发送markdown富文本消息
+        :param client: 客户端
+        :param title: 消息标题
+        :param markdownText: markdown内容
+        :param at: @某人 数组/字符串
+            如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+        :param atAll: 是否@所有人
+        :param headers: 额外请求头信息，通用不用关心
+        :return:
         """
         dingTalkClient = self.__findDingTalkClient(client)
         if dingTalkClient:
             dingTalkClient.sendMarkdown(title, markdownText, at, atAll, headers)
+
+    def sendMarkdownFile(self, client: str, title: str, filePath: str, at: (list, set, tuple, str) = None,
+                         atAll: bool = False,
+                         encoding='utf-8', **templateVariables):
+        """
+        发送markdown富文本消息（模板文件）
+        :param client: 客户端名称
+        :param title: 消息标题
+        :param filePath: markdown模板文件内容
+        :param at: @某人 数组/字符串
+            如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+        :param atAll: 是否@所有人
+        :param encoding: 模板文件编码
+        :param templateVariables: 模板变量
+        :return:
+        """
+        dingTalkClient = self.__findDingTalkClient(client)
+        if dingTalkClient:
+            dingTalkClient.sendMarkdownFile(title, filePath, at, atAll, encoding, **templateVariables)
 
     def sendLink(self, client: str, title: str, text: str, messageUrl: str, picUrl: str,
                  at: (list, set, tuple, str) = None,
                  atAll: bool = False,
                  headers=None):
         """
-        :at 参数可以是数组，也可以是使用逗号分隔的字符串
+        发送Link钉钉消息
+        :param client: 客户端名称
+        :param title: 消息标题
+        :param text: 文本内容
+        :param messageUrl: 消息跳转链接
+        :param picUrl: 消息的图片地址
+        :param at: @某人 数组/字符串
+            如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+        :param atAll: 是否@所有人
+        :param headers: 额外请求头信息，通用不用关心
+        :return:
         """
         dingTalkClient = self.__findDingTalkClient(client)
         if dingTalkClient:
             dingTalkClient.sendLink(title, text, messageUrl, picUrl, at, atAll, headers)
 
-    def sendActionCard(self, client: str, title: str, text: str, btns: (list, set, tuple) = None,
+    def sendActionCard(self, client: str, title: str, markdownText: str, btns: (list, set, tuple) = None,
                        at: (list, set, tuple, str) = None,
                        atAll: bool = False,
                        headers=None):
         """
-        :at 参数可以是数组，也可以是使用逗号分隔的字符串
-        :btns 格式 : [
-                         ("内容不错", "https://www.cnblogs.com/kancy/p/13470386.html"),
-                         ("不感兴趣", "https://www.cnblogs.com/kancy/p/13912443.html")
-                    ]
+        发送ActionCard钉钉消息
+        :param client: 客户端名称
+        :param title: 消息标题
+        :param markdownText: 文本内容
+        :param btns: 按钮列表
+            格式 : [("内容不错", "https://www.cnblogs.com/kancy/p/13470386.html"),
+                   ("不感兴趣", "https://www.cnblogs.com/kancy/p/13912443.html")]
+        :param at: @某人 数组/字符串
+            如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+        :param atAll: 是否@所有人
+        :param headers: 额外请求头信息，通用不用关心
+        :return:
         """
         dingTalkClient = self.__findDingTalkClient(client)
         if dingTalkClient:
-            dingTalkClient.sendActionCard(title, text, btns, at, atAll, headers)
+            dingTalkClient.sendActionCard(title, markdownText, btns, at, atAll, headers)
+
+    def sendActionCardFile(self, client: str, title: str, filePath: str, btns: (list, set, tuple) = None,
+                           at: (list, set, tuple, str) = None,
+                           atAll: bool = False, encoding: str = 'utf-8', **templateVariables):
+        """
+        发送ActionCard钉钉消息（模板文件）
+        :param client: 客户端名称
+        :param title: 消息标题
+        :param filePath: markdown模板文件路径
+        :param btns: 按钮列表
+            格式 : [("内容不错", "https://www.cnblogs.com/kancy/p/13470386.html"),
+                   ("不感兴趣", "https://www.cnblogs.com/kancy/p/13912443.html")]
+        :param at: @某人 数组/字符串
+            如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+        :param atAll: 是否@所有人
+        :param encoding: 模板文件编码
+        :param templateVariables: 模板文件变量
+        :return:
+        """
+        dingTalkClient = self.__findDingTalkClient(client)
+        if dingTalkClient:
+            dingTalkClient.sendActionCardFile(title, filePath, btns, at, atAll, encoding, **templateVariables)
 
     def sendFeedCard(self, client: str, links: (list, set, tuple), at: (list, set, tuple, str) = None,
                      atAll: bool = False,
                      headers=None):
         """
-        :at 参数可以是数组，也可以是使用逗号分隔的字符串
-        :links 格式 : [
-                        ("定位占用CPU较高的进程、线程、代码位置？", "https://www.cnblogs.com/kancy/p/13470386.html",
-                         "https://img1.baidu.com/it/u=3312920655,3266355600&fm=26&fmt=auto"),
-                        ("浅谈我对DDD领域驱动设计的理解", "https://www.cnblogs.com/kancy/p/13425737.html"),
-                        ("单元测试之PowerMock", "https://www.cnblogs.com/kancy/p/13912443.html"),
-                        ("正确创建索引和索引失效", "https://www.cnblogs.com/kancy/p/13460140.html")
-                    ]
+        发送FeedCard钉钉消息
+        :param client: 客户端名称
+        :param links: 图文链接列表
+            格式 : [("定位占用CPU较高的进程、线程、代码位置？", "https://www.cnblogs.com/kancy/p/13470386.html",
+                    "https://img1.baidu.com/it/u=3312920655,3266355600&fm=26&fmt=auto"),
+                    ("浅谈我对DDD领域驱动设计的理解", "https://www.cnblogs.com/kancy/p/13425737.html"),
+                    ("单元测试之PowerMock", "https://www.cnblogs.com/kancy/p/13912443.html"),
+                    ("正确创建索引和索引失效", "https://www.cnblogs.com/kancy/p/13460140.html")]
+        :param at: @某人 数组/字符串
+            如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+        :param atAll: 是否@所有人
+        :param headers: 额外请求头信息，通用不用关心
+        :return:
         """
         dingTalkClient = self.__findDingTalkClient(client)
         if dingTalkClient:
             dingTalkClient.sendFeedCard(links, at, atAll, headers)
 
     def send(self, client: str, jsonBody, headers=None):
+        """
+        发送钉钉消息请求
+        :param client: 客户端名称
+        :param jsonBody: 消息请求体
+        :param headers: 请求头
+        :return:
+        """
         dingTalkClient = self.__findDingTalkClient(client)
         if dingTalkClient:
             dingTalkClient.send(jsonBody, headers)

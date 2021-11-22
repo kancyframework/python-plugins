@@ -334,13 +334,16 @@ def getFileHash(filePath, hashName: str):
         return hashlib.new(hashName, dataBytes).hexdigest()
 
 
-def __hash_salt(hashFun, data: (str, bytes, bytearray), salt: str = "", encoding='utf-8'):
+def __hash_salt(hashFun, data: (str, bytes, bytearray), salt: str = None, encoding='utf-8'):
     """
     内部方法，不推荐使用
     """
     if not isinstance(data, (bytes, bytearray)):
-        data = str(data).encode(encoding)
-    low = hashFun(salt.encode(encoding))
+        data = str(data).encode(encoding=encoding)
+    if salt:
+        low = hashFun(salt.encode(encoding=encoding))
+    else:
+        low = hashFun()
     low.update(data)
     return low.hexdigest()
 
