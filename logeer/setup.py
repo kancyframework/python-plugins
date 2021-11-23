@@ -23,7 +23,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'logeer'
-VERSION = '0.0.2'
+VERSION = '0.0.3'
 DESCRIPTION = '一个日志操作工具类。'
 URL = 'https://github.com/kancyframework/python-plugins/tree/main/logeer'
 EMAIL = '793272861@qq.com'

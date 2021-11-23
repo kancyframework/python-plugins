@@ -301,13 +301,18 @@ class DingTalker:
                 if os.access(file, os.F_OK):
                     configFilePath = file
                     break
-        if not configFilePath:
-            raise RuntimeError(f"Not Found conf file : {files}")
+        else:
+            # 用户指定的配置文件必须存在
+            if not (os.path.exists(configFilePath) and os.path.isfile(configFilePath)):
+                raise RuntimeError(f"Not access conf file : {configFilePath}")
 
-        self.configFilePath = configFilePath
         self.encoding = encoding
-        self.confer = confer.Confer(configFilePath, encoding)
         self.dingTalkClients = {}
+        self.configFilePath = None
+        self.confer = None
+        if configFilePath:
+            self.configFilePath = configFilePath
+            self.confer = confer.Confer(configFilePath, encoding)
 
     def sendText(self, client: str, content: str, at: (list, set, tuple, str) = None, atAll: bool = False,
                  headers=None):
@@ -465,9 +470,12 @@ class DingTalker:
         dingTalkClient = self.dingTalkClients.get(client)
         if not dingTalkClient:
             dingTalkClient = self.__initDingTalkClient(client)
+            self.dingTalkClients[client] = dingTalkClient
         return dingTalkClient
 
     def __initDingTalkClient(self, client) -> DingTalkClient:
+        if not self.confer or not self.confer.has(client):
+            raise RuntimeError(f"Not Found client {client}")
         accessToken = self.confer.get(client, 'accessToken')
         secretKey = self.confer.get(client, 'secretKey')
         if accessToken and secretKey:
@@ -476,3 +484,150 @@ class DingTalker:
             dingTalkClient = DingTalkClient(accessToken, secretKey, encoding, debug)
             return dingTalkClient
         raise RuntimeError(f"In {self.configFilePath} , Not Found client {client} -> accessToken and secretKey")
+
+
+__dingTalker = DingTalker()
+
+
+def sendText(client: str, content: str, at: (list, set, tuple, str) = None, atAll: bool = False,
+             headers=None):
+    """
+    发送普通文本消息
+    :param client: 客户端
+    :param content: 文本内容
+    :param at: @某人 数组/字符串
+        如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+    :param atAll: 是否@所有人
+    :param headers: 额外请求头信息，通用不用关心
+    :return:
+    """
+    __dingTalker.sendText(client, content, at, atAll, headers)
+
+
+def sendMarkdown(client: str, title: str, markdownText: str, at: (list, set, tuple, str) = None,
+                 atAll: bool = False,
+                 headers=None):
+    """
+    发送markdown富文本消息
+    :param client: 客户端
+    :param title: 消息标题
+    :param markdownText: markdown内容
+    :param at: @某人 数组/字符串
+        如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+    :param atAll: 是否@所有人
+    :param headers: 额外请求头信息，通用不用关心
+    :return:
+    """
+    __dingTalker.sendMarkdown(client, title, markdownText, at, atAll, headers)
+
+
+def sendMarkdownFile(client: str, title: str, filePath: str, at: (list, set, tuple, str) = None,
+                     atAll: bool = False,
+                     encoding='utf-8', **templateVariables):
+    """
+    发送markdown富文本消息（模板文件）
+    :param client: 客户端名称
+    :param title: 消息标题
+    :param filePath: markdown模板文件内容
+    :param at: @某人 数组/字符串
+        如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+    :param atAll: 是否@所有人
+    :param encoding: 模板文件编码
+    :param templateVariables: 模板变量
+    :return:
+    """
+    __dingTalker.sendMarkdownFile(client, title, filePath, at, atAll, encoding, **templateVariables)
+
+
+def sendLink(client: str, title: str, text: str, messageUrl: str, picUrl: str,
+             at: (list, set, tuple, str) = None,
+             atAll: bool = False,
+             headers=None):
+    """
+    发送Link钉钉消息
+    :param client: 客户端名称
+    :param title: 消息标题
+    :param text: 文本内容
+    :param messageUrl: 消息跳转链接
+    :param picUrl: 消息的图片地址
+    :param at: @某人 数组/字符串
+        如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+    :param atAll: 是否@所有人
+    :param headers: 额外请求头信息，通用不用关心
+    :return:
+    """
+    __dingTalker.sendLink(client, title, text, messageUrl, picUrl, at, atAll, headers)
+
+
+def sendActionCard(client: str, title: str, markdownText: str, btns: (list, set, tuple) = None,
+                   at: (list, set, tuple, str) = None,
+                   atAll: bool = False,
+                   headers=None):
+    """
+    发送ActionCard钉钉消息
+    :param client: 客户端名称
+    :param title: 消息标题
+    :param markdownText: 文本内容
+    :param btns: 按钮列表
+        格式 : [("内容不错", "https://www.cnblogs.com/kancy/p/13470386.html"),
+               ("不感兴趣", "https://www.cnblogs.com/kancy/p/13912443.html")]
+    :param at: @某人 数组/字符串
+        如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+    :param atAll: 是否@所有人
+    :param headers: 额外请求头信息，通用不用关心
+    :return:
+    """
+    __dingTalker.sendActionCard(client, title, markdownText, btns, at, atAll, headers)
+
+
+def sendActionCardFile(client: str, title: str, filePath: str, btns: (list, set, tuple) = None,
+                       at: (list, set, tuple, str) = None,
+                       atAll: bool = False, encoding: str = 'utf-8', **templateVariables):
+    """
+    发送ActionCard钉钉消息（模板文件）
+    :param client: 客户端名称
+    :param title: 消息标题
+    :param filePath: markdown模板文件路径
+    :param btns: 按钮列表
+        格式 : [("内容不错", "https://www.cnblogs.com/kancy/p/13470386.html"),
+               ("不感兴趣", "https://www.cnblogs.com/kancy/p/13912443.html")]
+    :param at: @某人 数组/字符串
+        如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+    :param atAll: 是否@所有人
+    :param encoding: 模板文件编码
+    :param templateVariables: 模板文件变量
+    :return:
+    """
+    __dingTalker.sendActionCardFile(client, title, filePath, btns, at, atAll, encoding, **templateVariables)
+
+
+def sendFeedCard(client: str, links: (list, set, tuple), at: (list, set, tuple, str) = None,
+                 atAll: bool = False,
+                 headers=None):
+    """
+    发送FeedCard钉钉消息
+    :param client: 客户端名称
+    :param links: 图文链接列表
+        格式 : [("定位占用CPU较高的进程、线程、代码位置？", "https://www.cnblogs.com/kancy/p/13470386.html",
+                "https://img1.baidu.com/it/u=3312920655,3266355600&fm=26&fmt=auto"),
+                ("浅谈我对DDD领域驱动设计的理解", "https://www.cnblogs.com/kancy/p/13425737.html"),
+                ("单元测试之PowerMock", "https://www.cnblogs.com/kancy/p/13912443.html"),
+                ("正确创建索引和索引失效", "https://www.cnblogs.com/kancy/p/13460140.html")]
+    :param at: @某人 数组/字符串
+        如果是字符串，使用逗号分隔，例如：180xxx001,180xxx002
+    :param atAll: 是否@所有人
+    :param headers: 额外请求头信息，通用不用关心
+    :return:
+    """
+    __dingTalker.sendFeedCard(client, links, at, atAll, headers)
+
+
+def send(client: str, jsonBody, headers=None):
+    """
+    发送钉钉消息请求
+    :param client: 客户端名称
+    :param jsonBody: 消息请求体
+    :param headers: 请求头
+    :return:
+    """
+    __dingTalker.send(client, jsonBody, headers)

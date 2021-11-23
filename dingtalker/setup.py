@@ -23,7 +23,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'dingtalker'
-VERSION = '0.0.5'
+VERSION = '0.0.6'
 DESCRIPTION = '钉钉机器人客户端工具。'
 URL = 'https://github.com/kancyframework/python-plugins/tree/main/dingtalker'
 EMAIL = '793272861@qq.com'

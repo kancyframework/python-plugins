@@ -11,9 +11,9 @@ from email.utils import formataddr
 import fileer
 
 
-class Mailer(object):
+class EmailSender(object):
     def __init__(self, host: str, port: int, username: str, password: str, fromName=None, encoding: str = 'utf-8',
-                 debug=False):
+                 debug: bool = False):
         self.host = host
         self.port = port
         self.username = username
@@ -164,7 +164,7 @@ class Mailer(object):
         self.smtpObj.quit()
 
 
-class QQMailer(Mailer):
+class QQEmailSender(EmailSender):
     """
     QQ邮箱
     """
@@ -174,7 +174,7 @@ class QQMailer(Mailer):
         super().__init__("smtp.qq.com", port, username, password, fromName, encoding, debug)
 
 
-class NeteaseMailer(Mailer):
+class NeteaseEmailSender(EmailSender):
     """
     网易邮箱
     """
@@ -184,21 +184,226 @@ class NeteaseMailer(Mailer):
         super().__init__("smtp.163.com", port, username, password, fromName, encoding, debug)
 
 
-class GoogleMailer(Mailer):
+class GoogleEmailSender(EmailSender):
     """
     Google邮箱
     """
 
     def __init__(self, username: str, password: str, port: int = 25, fromName=None, encoding: str = 'utf-8',
-                 debug=False):
+                 debug: bool = False):
         super().__init__("smtp.gmail.com", port, username, password, fromName, encoding, debug)
 
 
-class GMailer(GoogleMailer):
-    """
-    Google邮箱
-    """
+class Emailer(object):
 
-    def __init__(self, username: str, password: str, port: int = 25, fromName=None, encoding: str = 'utf-8',
-                 debug=False):
-        super().__init__("smtp.gmail.com", port, username, password, fromName, encoding, debug)
+    def __init__(self, configFilePath: str = None, encoding="utf-8") -> None:
+        import confer
+
+        if not configFilePath:
+            userHome = str(os.path.expanduser('~')).replace("\\", "/")
+            files = ['emaileer.ini', 'emailer.ini',
+                     f'{userHome}/emaileer.ini', f'{userHome}/emailer.ini']
+            for file in files:
+                if os.access(file, os.F_OK):
+                    configFilePath = file
+                    break
+        else:
+            # 用户指定的配置文件必须存在
+            if not (os.path.exists(configFilePath) and os.path.isfile(configFilePath)):
+                raise RuntimeError(f"Not access conf file : {configFilePath}")
+
+        self.encoding = encoding
+        self.emailSenders = {}
+        self.configFilePath = None
+        self.confer = None
+        if configFilePath:
+            self.configFilePath = configFilePath
+            self.confer = confer.Confer(configFilePath, encoding)
+
+    def sendHtmlFile(self, sender: str, title: str, htmlFilePath: str, receivers: (str, list, set, tuple),
+                     files: (str, list, set, tuple) = None,
+                     encoding=None, **templateVariables):
+        """
+        发送Html邮件（模板文件）
+        :param sender: 邮件发送者
+        :param title: 邮件标题
+        :param htmlFilePath: html模板路径
+        :param receivers: 接收人（数组、字符串）
+            为字符串时，使用逗号分割
+        :param files: 附件（数组、字符串）
+            1.为字符串时，使用逗号分割，例如："file1.txt,file2.txt,通话.mp3,美女.jpg"
+            2.列表元组：[("file1.txt", "f1.txt"),("file2.txt")]
+            3.列表字典：[{"filePath:'file1.txt',"fileName:'file1.txt'"},{"filePath:'file2.docx',"fileName:'读书笔记.docx'"}]
+        :param encoding: 字符编码
+        :param templateVariables: 模板文件变量
+        :return:
+        """
+        emailSender = self.__findEmailSender(sender)
+        if emailSender:
+            emailSender.sendHtmlFile(title, htmlFilePath, receivers, files, encoding, **templateVariables)
+
+    def sendHtml(self, sender: str, title: str, html: str, receivers: (str, list, set, tuple),
+                 files: (str, list, set, tuple) = None,
+                 encoding: str = None):
+        """
+        发送Html邮件
+        :param sender: 邮件发送者
+        :param title: 邮件标题
+        :param html: html内容
+        :param receivers: 接收人（数组、字符串）
+            为字符串时，使用逗号分割
+        :param files: 附件（数组、字符串）
+            1.为字符串时，使用逗号分割，例如："file1.txt,file2.txt,通话.mp3,美女.jpg"
+            2.列表元组：[("file1.txt", "f1.txt"),("file2.txt")]
+            3.列表字典：[{"filePath:'file1.txt',"fileName:'file1.txt'"},{"filePath:'file2.docx',"fileName:'读书笔记.docx'"}]
+        :param encoding: 字符编码
+        :return:
+        """
+        return self.sendEmail(sender, title, html, receivers, files, 'html', encoding)
+
+    def sendText(self, sender: str, title: str, text: str, receivers: (str, list, set, tuple),
+                 files: (str, list, set, tuple) = None,
+                 encoding: str = None):
+        """
+        发送Html邮件
+        :param sender: 邮件发送者
+        :param title: 邮件标题
+        :param text: 文本内容
+        :param receivers: 接收人（数组、字符串）
+            为字符串时，使用逗号分割
+        :param files: 附件（数组、字符串）
+            1.为字符串时，使用逗号分割，例如："file1.txt,file2.txt,通话.mp3,美女.jpg"
+            2.列表元组：[("file1.txt", "f1.txt"),("file2.txt")]
+            3.列表字典：[{"filePath:'file1.txt',"fileName:'file1.txt'"},{"filePath:'file2.docx',"fileName:'读书笔记.docx'"}]
+        :param encoding: 字符编码
+        :return:
+        """
+        return self.sendEmail(sender, title, text, receivers, files, 'plain', encoding)
+
+    def sendEmail(self, sender: str, title: str, emailContent: str, receivers: (str, list, set, tuple),
+                  files: (str, list, set, tuple) = None, type: str = "plain", encoding: str = None):
+
+        """
+        发送邮件
+        :param sender: 邮件发送者
+        :param title: 邮件标题
+        :param emailContent: 邮件内容
+        :param receivers: 接收人（数组、字符串）
+            为字符串时，使用逗号分割
+        :param files: 附件（数组、字符串）
+            1.为字符串时，使用逗号分割，例如："file1.txt,file2.txt,通话.mp3,美女.jpg"
+            2.列表元组：[("file1.txt", "f1.txt"),("file2.txt")]
+            3.列表字典：[{"filePath:'file1.txt',"fileName:'file1.txt'"},{"filePath:'file2.docx',"fileName:'读书笔记.docx'"}]
+        :param type: 文件内容类型 （“plain” , "html"）
+        :param encoding: 字符编码
+        :return:
+        """
+        emailSender = self.__findEmailSender(sender)
+        if emailSender:
+            emailSender.sendEmail(title, emailContent, receivers, files, type, encoding)
+
+    def __findEmailSender(self, sender) -> EmailSender:
+        emailSender = self.emailSenders.get(sender)
+        if not emailSender:
+            emailSender = self.__initEmailSender(sender)
+            self.emailSenders[sender] = emailSender
+        return emailSender
+
+    def __initEmailSender(self, sender) -> EmailSender:
+        if not self.confer or not self.confer.has(sender):
+            raise RuntimeError(f"Not Found sender : {sender}")
+        host = self.confer.get(sender, 'host')
+        username = self.confer.get(sender, 'username')
+        password = self.confer.get(sender, 'password')
+        if host and username and password:
+            port = self.confer.getInt(sender, 'port', 25)
+            fromName = self.confer.get(sender, 'fromName', username)
+            encoding = self.confer.get(sender, 'encoding', self.encoding)
+            debug = self.confer.getBoolean(sender, 'debug', False)
+            emailSender = EmailSender(host, port, username, password, fromName, encoding, debug)
+            return emailSender
+        raise RuntimeError(f"In {self.configFilePath} , Not Found sender {sender} -> host and username or password")
+
+
+__emailer = Emailer()
+
+
+def sendHtmlFile(sender: str, title: str, htmlFilePath: str, receivers: (str, list, set, tuple),
+                 files: (str, list, set, tuple) = None,
+                 encoding=None, **templateVariables):
+    """
+    发送Html邮件（模板文件）
+    :param sender: 邮件发送者
+    :param title: 邮件标题
+    :param htmlFilePath: html模板路径
+    :param receivers: 接收人（数组、字符串）
+        为字符串时，使用逗号分割
+    :param files: 附件（数组、字符串）
+        1.为字符串时，使用逗号分割，例如："file1.txt,file2.txt,通话.mp3,美女.jpg"
+        2.列表元组：[("file1.txt", "f1.txt"),("file2.txt")]
+        3.列表字典：[{"filePath:'file1.txt',"fileName:'file1.txt'"},{"filePath:'file2.docx',"fileName:'读书笔记.docx'"}]
+    :param encoding: 字符编码
+    :param templateVariables: 模板文件变量
+    :return:
+    """
+    return __emailer.sendHtmlFile(sender, title, htmlFilePath, receivers, files, encoding, **templateVariables)
+
+
+def sendHtml(sender: str, title: str, html: str, receivers: (str, list, set, tuple),
+             files: (str, list, set, tuple) = None,
+             encoding: str = None):
+    """
+    发送Html邮件
+    :param sender: 邮件发送者
+    :param title: 邮件标题
+    :param html: html内容
+    :param receivers: 接收人（数组、字符串）
+        为字符串时，使用逗号分割
+    :param files: 附件（数组、字符串）
+        1.为字符串时，使用逗号分割，例如："file1.txt,file2.txt,通话.mp3,美女.jpg"
+        2.列表元组：[("file1.txt", "f1.txt"),("file2.txt")]
+        3.列表字典：[{"filePath:'file1.txt',"fileName:'file1.txt'"},{"filePath:'file2.docx',"fileName:'读书笔记.docx'"}]
+    :param encoding: 字符编码
+    :return:
+    """
+    return __emailer.sendEmail(sender, title, html, receivers, files, 'html', encoding)
+
+
+def sendText(sender: str, title: str, text: str, receivers: (str, list, set, tuple),
+             files: (str, list, set, tuple) = None,
+             encoding: str = None):
+    """
+    发送Html邮件
+    :param sender: 邮件发送者
+    :param title: 邮件标题
+    :param text: 文本内容
+    :param receivers: 接收人（数组、字符串）
+        为字符串时，使用逗号分割
+    :param files: 附件（数组、字符串）
+        1.为字符串时，使用逗号分割，例如："file1.txt,file2.txt,通话.mp3,美女.jpg"
+        2.列表元组：[("file1.txt", "f1.txt"),("file2.txt")]
+        3.列表字典：[{"filePath:'file1.txt',"fileName:'file1.txt'"},{"filePath:'file2.docx',"fileName:'读书笔记.docx'"}]
+    :param encoding: 字符编码
+    :return:
+    """
+    return __emailer.sendEmail(sender, title, text, receivers, files, 'plain', encoding)
+
+
+def sendEmail(sender: str, title: str, emailContent: str, receivers: (str, list, set, tuple),
+              files: (str, list, set, tuple) = None, type: str = "plain", encoding: str = None):
+    """
+    发送邮件
+    :param sender: 邮件发送者
+    :param title: 邮件标题
+    :param emailContent: 邮件内容
+    :param receivers: 接收人（数组、字符串）
+        为字符串时，使用逗号分割
+    :param files: 附件（数组、字符串）
+        1.为字符串时，使用逗号分割，例如："file1.txt,file2.txt,通话.mp3,美女.jpg"
+        2.列表元组：[("file1.txt", "f1.txt"),("file2.txt")]
+        3.列表字典：[{"filePath:'file1.txt',"fileName:'file1.txt'"},{"filePath:'file2.docx',"fileName:'读书笔记.docx'"}]
+    :param type: 文件内容类型 （“plain” , "html"）
+    :param encoding: 字符编码
+    :return:
+    """
+    __emailer.sendEmail(sender, title, emailContent, receivers, files, type, encoding)
