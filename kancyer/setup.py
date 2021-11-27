@@ -40,6 +40,7 @@ REQUIRED = [
      'fileer',
      'randomer',
      'langeer',
+     'timeer',
      'sfer'
 ]
 
