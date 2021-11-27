@@ -23,7 +23,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'langeer'
-VERSION = '0.0.4'
+VERSION = '0.0.5'
 DESCRIPTION = '基础工具'
 URL = 'https://github.com/kancyframework/python-plugins/tree/main/langeer'
 EMAIL = '793272861@qq.com'
