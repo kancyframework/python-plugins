@@ -31,7 +31,7 @@ AUTHOR = 'kancy'
 
 # 额外单独模块
 SINGLE_EXTRAS_MODULES = [
-    'emaileer'
+    'emaileer','kancyemail'
 ]
 
 # 强制的依赖包
