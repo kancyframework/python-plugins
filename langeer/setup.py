@@ -23,15 +23,15 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'langeer'
-VERSION = '0.0.1'
-DESCRIPTION = '钉钉机器人客户端工具。'
+VERSION = '0.0.2'
+DESCRIPTION = '基础工具'
 URL = 'https://github.com/kancyframework/python-plugins/tree/main/langeer'
 EMAIL = '793272861@qq.com'
 AUTHOR = 'kancy'
 
 # 额外单独模块
 SINGLE_EXTRAS_MODULES = [
-    #'langeer'
+    'langeer'
 ]
 
 # 强制的依赖包

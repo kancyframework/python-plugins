@@ -77,7 +77,7 @@ def randomItems(items: (list, set, tuple, str), size=1, distinct=True) -> list:
                 return lists
 
 
-def randomChars(size: int, distinct=True) -> str:
+def randomChars(size: int, distinct=False) -> str:
     """
     随机生成指定长度的可见字符串
     :param size:

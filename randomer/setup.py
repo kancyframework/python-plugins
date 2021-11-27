@@ -23,7 +23,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'randomer'
-VERSION = '0.0.2'
+VERSION = '0.0.3'
 DESCRIPTION = '一个随机数操作工具类。'
 URL = 'https://github.com/kancyframework/python-plugins/tree/main/randomer'
 EMAIL = '793272861@qq.com'
