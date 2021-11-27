@@ -1,7 +1,4 @@
 import os
-import re
-import shutil
-from typing import Any, IO
 
 __filer_default_charset = 'utf-8'
 
@@ -13,6 +10,7 @@ def formatPath(path: str):
     :return: 格式化路径
     """
     if path:
+        import re
         return re.sub("/+", "/", path.replace("\\", "/"))
 
 
@@ -116,6 +114,22 @@ def getUserWorkspace(workspace: str) -> str:
     return paths(getUserHome(), workspace)
 
 
+def getDesktop() -> str:
+    """
+    获取桌面路径
+    :return:
+    """
+    return fpath(os.path.join(os.path.expanduser('~'), "Desktop"))
+
+
+def getDesktopWorkspace(workspace: str) -> str:
+    """
+    获取桌面指定工作空间
+    :return:
+    """
+    return paths(getDesktop(), workspace)
+
+
 def getCurrentDir() -> str:
     """
     获取当前目录
@@ -201,7 +215,7 @@ def newFile(filePath: str):
     return createFile(filePath)
 
 
-def openFile(path: str, mode: str = 'r', encoding: str = None) -> IO[Any]:
+def openFile(path: str, mode: str = 'r', encoding: str = None):
     """
     打开一个文件
     :param path: 文件路径
@@ -232,7 +246,7 @@ def openFile(path: str, mode: str = 'r', encoding: str = None) -> IO[Any]:
         return open(path, mode)
 
 
-def openReadFile(path: str, encoding=__filer_default_charset) -> IO[Any]:
+def openReadFile(path: str, encoding=__filer_default_charset):
     """
     以只读模式打开文件
     :param path: 文件路径
@@ -242,7 +256,7 @@ def openReadFile(path: str, encoding=__filer_default_charset) -> IO[Any]:
     return openFile(path, "r", encoding)
 
 
-def openWriteFile(path: str, append: bool = False, encoding=__filer_default_charset) -> IO[Any]:
+def openWriteFile(path: str, append: bool = False, encoding=__filer_default_charset):
     """
     以写入模式打开文件
     :param path: 文件路径
@@ -257,7 +271,7 @@ def openWriteFile(path: str, append: bool = False, encoding=__filer_default_char
         return openFile(path, "w+", encoding)
 
 
-def openReadBytesFile(path: str) -> IO[Any]:
+def openReadBytesFile(path: str):
     """
     以只读模式打开二进制文件
     :param path: 文件路径
@@ -266,7 +280,7 @@ def openReadBytesFile(path: str) -> IO[Any]:
     return openFile(path, "rb")
 
 
-def openWriteBytesFile(path: str, append: bool = False) -> IO[Any]:
+def openWriteBytesFile(path: str, append: bool = False):
     """
     以写入模式打开二进制文件
     :param path: 文件路径
@@ -393,6 +407,7 @@ def copyFile(source: str, target: str):
     :return:
     """
     if existFile(source):
+        import shutil
         # 拷贝文件，包括全部信息
         shutil.copy2(source, target)
 
@@ -405,6 +420,7 @@ def copyFolder(source: str, target: str):
     :return:
     """
     if existFolder(source):
+        import shutil
         # 拷贝目录及文件， 新文件不能存在
         shutil.copytree(source, target)
 
@@ -432,6 +448,7 @@ def moveFile(source: str, target: str):
     :return:
     """
     if existFile(source):
+        import shutil
         shutil.move(source, target)
 
 
@@ -443,6 +460,7 @@ def moveFolder(source: str, target: str):
     :return:
     """
     if existFolder(source):
+        import shutil
         shutil.move(source, target)
 
 
@@ -475,6 +493,7 @@ def deleteFolder(folder: str):
     :return:
     """
     if existFolder(folder):
+        import shutil
         shutil.rmtree(folder)
 
 
@@ -546,6 +565,7 @@ def pack(packFolder: str, packFileName: str = None, mode: str = 'zip'):
     :return: 压缩文件路径
     """
     if existFolder(packFolder):
+        import shutil
         if not packFileName:
             packFileName = fileName(packFolder)
         return shutil.make_archive(packFileName, mode, packFolder)
@@ -561,6 +581,7 @@ def unpack(packFilePath: str, unpackFolder: str = None, mode: str = None):
     :return:
     """
     if existFile(packFilePath):
+        import shutil
         return shutil.unpack_archive(packFilePath, unpackFolder, mode)
 
 

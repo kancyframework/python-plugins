@@ -23,7 +23,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'fileer'
-VERSION = '0.0.2'
+VERSION = '0.0.4'
 DESCRIPTION = '一个文件操作工具类。'
 URL = 'https://github.com/kancyframework/python-plugins/tree/main/fileer'
 EMAIL = '793272861@qq.com'

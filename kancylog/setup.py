@@ -22,26 +22,26 @@ from setuptools import find_packages, setup, Command
 # 卸载本地模块：pip uninstall xxx
 
 # Package meta-data.
-NAME = 'emaileer'
-VERSION = '0.0.4'
-DESCRIPTION = '一个邮件操作工具类。'
-URL = 'https://github.com/kancyframework/python-plugins/tree/main/emaileer'
+NAME = 'kancylog'
+VERSION = '0.0.6'
+DESCRIPTION = '简单的控制台彩色日志工具。'
+URL = 'https://github.com/kancyframework/python-plugins/tree/main/kancylog'
 EMAIL = '793272861@qq.com'
 AUTHOR = 'kancy'
 
 # 额外单独模块
 SINGLE_EXTRAS_MODULES = [
-    'emaileer'
+    'kancylog'
 ]
 
 # 强制的依赖包
 REQUIRED = [
-    'fileer'
+    # 'requests',
 ]
 
 # 可选的依赖包
 EXTRAS = {
-    # 'shutil feature': ['shutil'],
+    # 'dingtalker client manager feature': ['confer'],
 }
 
 # 控制台脚本小工具

@@ -13,7 +13,18 @@ import fileer
 
 class EmailSender(object):
     def __init__(self, host: str, port: int, username: str, password: str, fromName=None, encoding: str = 'utf-8',
+                 ssl: bool = False,
                  debug: bool = False):
+        """
+        :param host: 服务器
+        :param port: 端口 25 or 465
+        :param username: 用户名
+        :param password: 密码
+        :param fromName: 发送者姓名
+        :param encoding: 编码
+        :param ssl: 是否安全模式
+        :param debug: 是否开启debug
+        """
         self.host = host
         self.port = port
         self.username = username
@@ -23,7 +34,7 @@ class EmailSender(object):
         self.fromName = fromName
         if not fromName:
             self.fromName = username
-        self.smtpObj = smtplib.SMTP()
+        self.smtpObj = ssl and smtplib.SMTP_SSL() or smtplib.SMTP()
         self.smtpObj.connect(self.host, port)
         self.smtpObj.login(self.username, self.password)
 
@@ -170,8 +181,9 @@ class QQEmailSender(EmailSender):
     """
 
     def __init__(self, username: str, password: str, port: int = 25, fromName=None, encoding: str = 'utf-8',
+                 ssl: bool = False,
                  debug=False):
-        super().__init__("smtp.qq.com", port, username, password, fromName, encoding, debug)
+        super().__init__("smtp.qq.com", port, username, password, fromName, encoding, ssl, debug)
 
 
 class NeteaseEmailSender(EmailSender):
@@ -180,8 +192,9 @@ class NeteaseEmailSender(EmailSender):
     """
 
     def __init__(self, username: str, password: str, port: int = 25, fromName=None, encoding: str = 'utf-8',
+                 ssl: bool = False,
                  debug=False):
-        super().__init__("smtp.163.com", port, username, password, fromName, encoding, debug)
+        super().__init__("smtp.163.com", port, username, password, fromName, encoding, ssl, debug)
 
 
 class GoogleEmailSender(EmailSender):
@@ -190,8 +203,9 @@ class GoogleEmailSender(EmailSender):
     """
 
     def __init__(self, username: str, password: str, port: int = 25, fromName=None, encoding: str = 'utf-8',
+                 ssl: bool = False,
                  debug: bool = False):
-        super().__init__("smtp.gmail.com", port, username, password, fromName, encoding, debug)
+        super().__init__("smtp.gmail.com", port, username, password, fromName, encoding, ssl, debug)
 
 
 class Emailer(object):
@@ -316,11 +330,12 @@ class Emailer(object):
         username = self.confer.get(sender, 'username')
         password = self.confer.get(sender, 'password')
         if host and username and password:
-            port = self.confer.getInt(sender, 'port', 25)
+            ssl = self.confer.getBoolean(sender, 'ssl', False)
+            port = self.confer.getInt(sender, 'port', ssl and 456 or 25)
             fromName = self.confer.get(sender, 'fromName', username)
             encoding = self.confer.get(sender, 'encoding', self.encoding)
             debug = self.confer.getBoolean(sender, 'debug', False)
-            emailSender = EmailSender(host, port, username, password, fromName, encoding, debug)
+            emailSender = EmailSender(host, port, username, password, fromName, encoding, ssl, debug)
             return emailSender
         raise RuntimeError(f"In {self.configFilePath} , Not Found sender {sender} -> host and username or password")
 

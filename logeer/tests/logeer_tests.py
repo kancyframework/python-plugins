@@ -5,7 +5,7 @@ log.addLogFile("test")
 
 # 日志级别
 log.trace("trace log")
-log.info("info log")
+log.logger.info("info log")
 log.warn("warn log")
 log.debug("debug log")
 log.error("error log")

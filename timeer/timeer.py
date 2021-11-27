@@ -104,6 +104,7 @@ def toString(timeObject, formatter: str = "%Y-%m-%d %H:%M:%S"):
         %I 12小时制小时数（01-12）
         %M 分钟数（00-59）
         %S 秒（00-59）
+        %f 毫秒
     :return:
     """
     if isinstance(timeObject, time.struct_time):
@@ -158,3 +159,5 @@ def plusSeconds(dt: datetime = now(), seconds=None):
     if seconds:
         return dt + datetime.timedelta(seconds=seconds)
     return dt
+
+print(toString(now(), formatter="%Y-%m-%d %H:%M:%S.%f")[:-3])
