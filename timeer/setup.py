@@ -31,7 +31,7 @@ AUTHOR = 'kancy'
 
 # 额外单独模块
 SINGLE_EXTRAS_MODULES = [
-    'timeer','kancytime'
+    'timeer', 'kancytime'
 ]
 
 # 强制的依赖包
@@ -41,13 +41,14 @@ REQUIRED = [
 
 # 可选的依赖包
 EXTRAS = {
-     # 'shutil feature': ['shutil'],
+    # 'shutil feature': ['shutil'],
 }
 
 # 控制台脚本小工具
 CONSOLE_SCRIPTS = [
     # 'kancyer=kancyer:main',
 ]
+
 
 # ======================================用户自定义数据结束=============================================
 
@@ -165,6 +166,25 @@ class PackageCommand(Command):
         sys.exit()
 
 
+# 卸载
+class UninstallCommand(Command):
+    description = 'Build and install the package.'
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        # 本地卸载
+        boldLog('Uninstall {} …'.format(NAME))
+        os.system('pip show {0}'.format(NAME))
+        os.system('pip uninstall {0}'.format(NAME))
+        sys.exit()
+
+
 # 打包程序设置
 setup(
     name=NAME,
@@ -218,7 +238,8 @@ setup(
         'package': PackageCommand,
         'deploy': UploadCommand,
         'upload': UploadCommand,
-        'publish': PublishCommand
+        'publish': PublishCommand,
+        'uninstall': UninstallCommand
     },
 
     # 打包后会在Scripts目录生成可执行文件

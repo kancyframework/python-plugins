@@ -414,6 +414,29 @@ class DB(object):
             self.commit()
             self.__connection.close()
             self.__closed = True
+            if self.__debug:
+                print(f"成功关闭DB：{self}, close conn: {self.__connection}")
+
+    def enableDebug(self):
+        """
+        启用debug能力
+        :return:
+        """
+        self.__debug = True
+
+    def disableDebug(self):
+        """
+         禁止debug能力
+         :return:
+         """
+        self.__debug = False
+
+    def getDatabaseType(self):
+        """
+        获取数据库类型
+        :return:
+        """
+        return self.__dbType
 
     def __printSql(self, sql, params, st):
         """

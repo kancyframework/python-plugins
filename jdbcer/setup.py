@@ -23,7 +23,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'jdbcer'
-VERSION = '0.0.1'
+VERSION = '0.0.2'
 DESCRIPTION = '数据库操作工具。'
 URL = 'https://github.com/kancyframework/python-plugins/tree/main/jdbcer'
 EMAIL = '793272861@qq.com'
@@ -36,7 +36,7 @@ SINGLE_EXTRAS_MODULES = [
 
 # 强制的依赖包
 REQUIRED = [
-    'pymysql',
+
 ]
 
 # 可选的依赖包
@@ -166,6 +166,25 @@ class PackageCommand(Command):
         sys.exit()
 
 
+# 卸载
+class UninstallCommand(Command):
+    description = 'Build and install the package.'
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        # 本地卸载
+        boldLog('Uninstall {} …'.format(NAME))
+        os.system('pip show {0}'.format(NAME))
+        os.system('pip uninstall {0}'.format(NAME))
+        sys.exit()
+
+
 # 打包程序设置
 setup(
     name=NAME,
@@ -205,7 +224,8 @@ setup(
         'package': PackageCommand,
         'deploy': UploadCommand,
         'upload': UploadCommand,
-        'publish': PublishCommand
+        'publish': PublishCommand,
+        'uninstall': UninstallCommand
     },
 
     # 打包后会在Scripts目录生成可执行文件

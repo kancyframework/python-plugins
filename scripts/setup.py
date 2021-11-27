@@ -49,6 +49,7 @@ CONSOLE_SCRIPTS = [
     # 'kancyer=kancyer:main',
 ]
 
+
 # ======================================用户自定义数据结束=============================================
 
 
@@ -165,6 +166,25 @@ class PackageCommand(Command):
         sys.exit()
 
 
+# 卸载
+class UninstallCommand(Command):
+    description = 'Build and install the package.'
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        # 本地卸载
+        boldLog('Uninstall {} …'.format(NAME))
+        os.system('pip show {0}'.format(NAME))
+        os.system('pip uninstall {0}'.format(NAME))
+        sys.exit()
+
+
 # 打包程序设置
 setup(
     name=NAME,
@@ -202,7 +222,6 @@ setup(
         ('data', ['data/names.dat'])
     ],
 
-
     license='MIT',
     classifiers=[
         # Trove classifiers
@@ -220,7 +239,8 @@ setup(
         'package': PackageCommand,
         'deploy': UploadCommand,
         'upload': UploadCommand,
-        'publish': PublishCommand
+        'publish': PublishCommand,
+        'uninstall': UninstallCommand
     },
 
     # 打包后会在Scripts目录生成可执行文件

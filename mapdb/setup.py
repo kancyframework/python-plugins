@@ -22,32 +22,33 @@ from setuptools import find_packages, setup, Command
 # 卸载本地模块：pip uninstall xxx
 
 # Package meta-data.
-NAME = 'fileer'
-VERSION = '0.0.5'
-DESCRIPTION = '一个文件操作工具类。'
-URL = 'https://github.com/kancyframework/python-plugins/tree/main/fileer'
+NAME = 'mapdb'
+VERSION = '0.0.1'
+DESCRIPTION = '简单的kv数据操作工具。'
+URL = 'https://github.com/kancyframework/python-plugins/tree/main/mapdb'
 EMAIL = '793272861@qq.com'
 AUTHOR = 'kancy'
 
 # 额外单独模块
 SINGLE_EXTRAS_MODULES = [
-    'fileer','kancyfile'
+    'mapdb'
 ]
 
 # 强制的依赖包
 REQUIRED = [
-    # 'pytest-shutil'
+    'dber'
 ]
 
 # 可选的依赖包
 EXTRAS = {
-     # 'shutil feature': ['shutil'],
+    'mysql feature': ['pymysql'],
 }
 
 # 控制台脚本小工具
 CONSOLE_SCRIPTS = [
-    # 'kancyer=kancyer:main',
+    # 'mapdb=mapdb:main',
 ]
+
 
 # ======================================用户自定义数据结束=============================================
 
@@ -185,6 +186,7 @@ class UninstallCommand(Command):
 
 
 # 打包程序设置
+
 setup(
     name=NAME,
     version=VERSION,
@@ -207,20 +209,6 @@ setup(
     extras_require=EXTRAS,
     include_package_data=True,
     license='MIT',
-
-    # If there are data files included in your packages that need to be
-    # installed, specify them here.  If using Python 2.6 or less, then these
-    # have to be included in MANIFEST.in as well.
-    # package_data={
-    #     'sample': ['package_data.dat'],
-    # },
-
-    # Although 'package_data' is the preferred approach, in some case you may
-    # need to place data files outside of your packages. See:
-    # http://docs.python.org/3.4/distutils/setupscript.html#installing-additional-files # noqa
-    # In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
-    # data_files=[('my_data', ['data/data_file'])],
-
     classifiers=[
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
