@@ -1,13 +1,39 @@
-import calendar
 import datetime
 import time
 
 
+def dateformat(timeObject, formatter: str = "%Y-%m-%d %H:%M:%S"):
+    """
+    格式化日期
+    :param timeObject: 时间对象
+    :param formatter:
+        %y 两位数的年份表示（00-99）
+        %Y 四位数的年份表示（000-9999）
+        %m 月份（01-12）
+        %d 月内中的一天（0-31）
+        %H 24小时制小时数（0-23）
+        %I 12小时制小时数（01-12）
+        %M 分钟数（00-59）
+        %S 秒（00-59）
+        %f 毫秒
+    :return:
+    """
+    if isinstance(timeObject, time.struct_time):
+        return time.strftime(formatter, timeObject)
+    if isinstance(timeObject, datetime.datetime):
+        return timeObject.strftime(formatter)
+    if isinstance(timeObject, datetime.date):
+        return timeObject.strftime(formatter)
+    raise ValueError("timeObject type error.")
+
+
 def getYearCalendar(year: int):
+    import calendar
     return calendar.calendar(year)
 
 
 def getMonthCalendar(year: int, month: int):
+    import calendar
     return calendar.month(year, month)
 
 
@@ -23,6 +49,19 @@ def currentTimeNanoseconds() -> int:
     return time.time_ns()
 
 
+def timestamp2datetime(timestamp: (int, float)):
+    """
+    时间戳转时间对象datetime
+    :param timestamp: 时间戳 (支持秒、毫秒)
+    :return: datetime对象
+    """
+    if timestamp > 10000000000:
+        timestamp = timestamp / 1000
+    if timestamp > 10000000000000:
+        timestamp = timestamp / 1000000
+    return datetime.datetime.fromtimestamp(timestamp)
+
+
 def localtime():
     return time.localtime()
 
@@ -32,7 +71,7 @@ def now():
 
 
 def nowString():
-    return toString(now())
+    return dateformat(now())
 
 
 def today():
@@ -40,7 +79,7 @@ def today():
 
 
 def todayString():
-    return toString(today(), "%Y-%m-%d")
+    return dateformat(today(), "%Y-%m-%d")
 
 
 def getDateTime(year, month, day, hour=0, minute=0, second=0, microSecond=0):
@@ -91,37 +130,18 @@ def parseTime(date_string, formatter: str = "%H:%M:%S"):
     return parse(date_string, formatter)
 
 
-def toString(timeObject, formatter: str = "%Y-%m-%d %H:%M:%S"):
-    """
-    格式化日期
-    :param timeObject: 时间对象
-    :param formatter:
-        %y 两位数的年份表示（00-99）
-        %Y 四位数的年份表示（000-9999）
-        %m 月份（01-12）
-        %d 月内中的一天（0-31）
-        %H 24小时制小时数（0-23）
-        %I 12小时制小时数（01-12）
-        %M 分钟数（00-59）
-        %S 秒（00-59）
-        %f 毫秒
-    :return:
-    """
-    if isinstance(timeObject, time.struct_time):
-        return time.strftime(formatter, timeObject)
-    if isinstance(timeObject, datetime.datetime):
-        return timeObject.strftime(formatter)
-    if isinstance(timeObject, datetime.date):
-        return timeObject.strftime(formatter)
-    raise ValueError("timeObject type error.")
-
-
 def toDateString(timeObject):
-    return toString(timeObject, "%Y-%m-%d")
+    return dateformat(timeObject, "%Y-%m-%d")
 
 
 def toDateTimeString(timeObject):
-    return toString(timeObject)
+    return dateformat(timeObject)
+
+
+def toTimeStampString(timeObject, formatter: str = "%Y-%m-%d %H:%M:%S.%f"):
+    if isinstance(timeObject, (int, float)):
+        timeObject = timestamp2datetime(timeObject)
+    return dateformat(timeObject, formatter)
 
 
 def toDateTime(t: (time.struct_time, datetime.date, datetime.datetime, str)):
@@ -159,5 +179,3 @@ def plusSeconds(dt: datetime = now(), seconds=None):
     if seconds:
         return dt + datetime.timedelta(seconds=seconds)
     return dt
-
-print(toString(now(), formatter="%Y-%m-%d %H:%M:%S.%f")[:-3])

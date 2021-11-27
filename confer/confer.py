@@ -9,10 +9,6 @@ class Confer:
         self.config = configparser.ConfigParser()
         self.config.read(filePath, encoding)
 
-    def get(self, section, key):
-        if self.config.has_option(section, key):
-            return self.config.get(section, key)
-
     def get(self, section, key, defValue=None):
         if self.config.has_option(section, key):
             return self.config.get(section, key)
