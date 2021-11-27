@@ -23,7 +23,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'kancyer'
-VERSION = '0.0.4'
+VERSION = '0.0.5'
 DESCRIPTION = '一个常用的工具集。'
 URL = 'https://github.com/kancyframework/python-plugins/tree/main/kancyer'
 EMAIL = '793272861@qq.com'

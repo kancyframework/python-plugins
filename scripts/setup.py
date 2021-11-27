@@ -188,18 +188,20 @@ setup(
     extras_require=EXTRAS,
     include_package_data=True,
 
-    # If there are data files included in your packages that need to be
-    # installed, specify them here.  If using Python 2.6 or less, then these
-    # have to be included in MANIFEST.in as well.
+    # 如果您的软件包中包含需要安装的数据文件，请在此处指定它们。
+    # 如果使用 Python 2.6 或更低版本，则这些也必须包含在 MANIFEST.in 中。
     # package_data={
-    #     'sample': ['package_data.dat'],
+    #     'names_data': ['data/names.dat'],
     # },
 
-    # Although 'package_data' is the preferred approach, in some case you may
-    # need to place data files outside of your packages. See:
-    # http://docs.python.org/3.4/distutils/setupscript.html#installing-additional-files # noqa
-    # In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
-    # data_files=[('my_data', ['data/data_file'])],
+    # 尽管“package_data”是首选方法，但在某些情况下，您可能需要将数据文件放在包之外。
+    # See: http://docs.python.org/3.4/distutils/setupscript.html#installing-additional-files
+    # 数据{python-home}/Lib/site-packages/组件.egg/数据文件相对路径目录
+    data_files=[
+        # ('数据文件相对路径目录', ['源文件文件路径']),
+        ('data', ['data/names.dat'])
+    ],
+
 
     license='MIT',
     classifiers=[

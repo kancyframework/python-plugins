@@ -36,6 +36,14 @@ def randomFloat(start: float = 0, end: float = 1, scale=None) -> float:
     return random.uniform(start, end)
 
 
+def randomBool() -> bool:
+    """
+    随机一个bool值
+    :return:
+    """
+    return randomFloat() > 0.5
+
+
 def randomItem(items: (list, set, tuple, str)):
     """
     随机一个元素
@@ -46,7 +54,7 @@ def randomItem(items: (list, set, tuple, str)):
         return random.choice(items)
 
 
-def randomItems(items: (list, set, tuple, str), size=1, distinct=True) -> list:
+def randomItems(items: (list, set, tuple, str), size=1, distinct=False) -> list:
     """
     随机一个元素列表
     :param items: 元素集合
@@ -124,3 +132,64 @@ def randomMobiles(*pres, size: int = 1) -> list[str]:
     while len(mobiles) < size:
         mobiles.add(randomMobile(*pres))
     return list(mobiles)
+
+
+class NameCreator(object):
+    def __init__(self):
+        import os
+        dataDir = os.path.dirname(os.path.abspath(__file__))
+        dataFile = os.path.join(dataDir, "data", "names.dat")
+        with open(dataFile, encoding="utf-8") as f:
+            self.names = f.readline().split(",")
+            self.bodyNames = f.readline().split(",")
+            self.girlNames = f.readline().split(",")
+
+    def getBodyName(self):
+        """
+        随机获取一个男孩姓名
+        :return:
+        """
+        fullName = f"{randomItem(self.names)}{randomItem(self.bodyNames)}"
+        return fullName
+
+    def getGirlName(self):
+        """
+        随机获取一个女孩姓名
+        :return:
+        """
+        fullName = f"{randomItem(self.names)}{randomItem(self.girlNames)}"
+        return fullName
+
+    def getName(self):
+        """
+        随机获取一个姓名
+        :return:
+        """
+        return randomBool() and self.getBodyName() or self.getGirlName()
+
+
+__name_creator = NameCreator()
+
+
+def randomBodyName():
+    """
+    随机获取一个男孩姓名
+    :return:
+    """
+    return __name_creator.getBodyName()
+
+
+def randomGirlName():
+    """
+    随机获取一个女孩姓名
+    :return:
+    """
+    return __name_creator.getGirlName()
+
+
+def randomName():
+    """
+    随机获取一个姓名
+    :return:
+    """
+    return __name_creator.getName()
