@@ -3,15 +3,20 @@ import json
 
 class __ObjectJsonEncoder(json.JSONEncoder):
     def default(self, o):
-        import datetime, decimal
+        if isinstance(o, set):
+            return list(o)
+        elif isinstance(o, complex):
+            return str(o)
+        elif isinstance(o, (bytes, bytearray)):
+            return o.decode()
+
+        import datetime
         if isinstance(o, datetime.datetime):
             return o.strftime('%Y-%m-%d %H:%M:%S')
         elif isinstance(o, datetime.date):
             return o.strftime('%Y-%m-%d')
-        elif isinstance(o, set):
-            return list(o)
-        elif isinstance(o, complex):
-            return str(o)
+
+        import decimal
         if isinstance(o, decimal.Decimal):
             return float(o)
         else:

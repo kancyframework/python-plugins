@@ -23,7 +23,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'objectjson'
-VERSION = '0.0.2'
+VERSION = '0.0.3'
 DESCRIPTION = 'json对象操作操作工具。'
 URL = 'https://github.com/kancyframework/python-plugins/tree/main/objectjson'
 EMAIL = '793272861@qq.com'

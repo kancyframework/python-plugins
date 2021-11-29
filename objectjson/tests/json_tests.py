@@ -11,6 +11,7 @@ class A(object):
         self.score = decimal.Decimal('85.5')
         self.love = {'apple', 'cat', 'dog'}
         self.logs = ['日志1', '日志2']
+        self.bytedata = b"hello"
 
 
 class B(A):
