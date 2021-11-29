@@ -215,6 +215,10 @@ class MapDB:
         self.close()
 
 
+class ShelveMapDB(MapDB):
+    pass
+
+
 class SQLiteMapDB(MapDB):
 
     def __init__(self, database='sqlitemap.db', topic='default', debug: bool = False, inner=False):

@@ -25,7 +25,7 @@ from setuptools import find_packages, setup, Command
 NAME = '模块名称'
 VERSION = '0.0.1'
 DESCRIPTION = '模块简单的描述。'
-URL = 'https://github.com/kancyframework/python-plugins'
+URL = 'https://github.com/kancyframework/python-plugins/tree/main/demo'
 EMAIL = '793272861@qq.com'
 AUTHOR = 'kancy'
 
@@ -109,6 +109,18 @@ def pushGitTag(confirm=False):
         os.system('git push --tags')
 
 
+# 本地打包
+def uninstall():
+    # 本地卸载
+    boldLog('Removing previous builds…')
+    here = os.path.abspath(os.path.dirname(__file__))
+    rmtree(os.path.join(here, 'build'))
+    rmtree(os.path.join(here, 'dist'))
+    boldLog('Uninstall {} …'.format(NAME))
+    os.system('pip show {0}'.format(NAME))
+    os.system('pip uninstall {0}'.format(NAME))
+
+
 # py setup.py publish
 class PublishCommand(Command):
     description = 'Build and install and deploy and push git tag the package.'
@@ -168,7 +180,7 @@ class PackageCommand(Command):
 
 # 卸载
 class UninstallCommand(Command):
-    description = 'Build and install the package.'
+    description = 'Remove Build and uninstall the package.'
     user_options = []
 
     def initialize_options(self):
@@ -178,10 +190,7 @@ class UninstallCommand(Command):
         pass
 
     def run(self):
-        # 本地卸载
-        boldLog('Uninstall {} …'.format(NAME))
-        os.system('pip show {0}'.format(NAME))
-        os.system('pip uninstall {0}'.format(NAME))
+        uninstall()
         sys.exit()
 
 
@@ -217,10 +226,10 @@ setup(
     # 尽管“package_data”是首选方法，但在某些情况下，您可能需要将数据文件放在包之外。
     # See: http://docs.python.org/3.4/distutils/setupscript.html#installing-additional-files
     # 数据{python-home}/Lib/site-packages/组件.egg/数据文件相对路径目录
-    data_files=[
-        # ('数据文件相对路径目录', ['源文件文件路径']),
-        ('data', ['data/names.dat'])
-    ],
+    # data_files=[
+    #     # ('数据文件相对路径目录', ['源文件文件路径']),
+    #     ('data', ['data/names.dat'])
+    # ],
 
     license='MIT',
     classifiers=[
