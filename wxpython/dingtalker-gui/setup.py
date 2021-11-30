@@ -22,38 +22,33 @@ from setuptools import find_packages, setup, Command
 # 卸载本地模块：pip uninstall xxx
 
 # Package meta-data.
-NAME = 'kancyer'
-VERSION = '0.0.7'
-DESCRIPTION = '一个常用的工具集。'
-URL = 'https://github.com/kancyframework/python-plugins/tree/main/kancyer'
+NAME = 'dingtalk-gui'
+VERSION = '0.0.1'
+DESCRIPTION = '钉钉发送客户端工具。'
+URL = 'https://github.com/kancyframework/python-plugins/tree/main/wxpython/dingtalker-gui'
 EMAIL = '793272861@qq.com'
 AUTHOR = 'kancy'
 
 # 额外单独模块
 SINGLE_EXTRAS_MODULES = [
-    'kancyer'
+
 ]
 
 # 强制的依赖包
 REQUIRED = [
-     'kancylog',
-     'fileer',
-     'randomer',
-     'langeer',
-     'timeer',
-     'sfer',
-     'objectjson'
+    'dingtalker','wxPython'
 ]
 
 # 可选的依赖包
 EXTRAS = {
-     'aes feature': ['pycryptodomex'],
+
 }
 
 # 控制台脚本小工具
 CONSOLE_SCRIPTS = [
-    # 'kancyer=kancyer:main',
+    'dingtalk-gui=dingtalkapp:main',
 ]
+
 
 # ======================================用户自定义数据结束=============================================
 
@@ -112,6 +107,18 @@ def pushGitTag(confirm=False):
         boldLog('Pushing git tags…')
         os.system('git tag v{0}'.format(VERSION))
         os.system('git push --tags')
+
+
+# 本地打包
+def uninstall():
+    # 本地卸载
+    boldLog('Removing previous builds…')
+    here = os.path.abspath(os.path.dirname(__file__))
+    rmtree(os.path.join(here, 'build'))
+    rmtree(os.path.join(here, 'dist'))
+    boldLog('Uninstall {} …'.format(NAME))
+    os.system('pip show {0}'.format(NAME))
+    os.system('pip uninstall {0}'.format(NAME))
 
 
 # py setup.py publish
@@ -173,7 +180,7 @@ class PackageCommand(Command):
 
 # 卸载
 class UninstallCommand(Command):
-    description = 'Build and install the package.'
+    description = 'Remove Build and uninstall the package.'
     user_options = []
 
     def initialize_options(self):
@@ -183,10 +190,7 @@ class UninstallCommand(Command):
         pass
 
     def run(self):
-        # 本地卸载
-        boldLog('Uninstall {} …'.format(NAME))
-        os.system('pip show {0}'.format(NAME))
-        os.system('pip uninstall {0}'.format(NAME))
+        uninstall()
         sys.exit()
 
 
@@ -212,21 +216,22 @@ setup(
     install_requires=REQUIRED,
     extras_require=EXTRAS,
     include_package_data=True,
-    license='MIT',
 
-    # If there are data files included in your packages that need to be
-    # installed, specify them here.  If using Python 2.6 or less, then these
-    # have to be included in MANIFEST.in as well.
+    # 如果您的软件包中包含需要安装的数据文件，请在此处指定它们。
+    # 如果使用 Python 2.6 或更低版本，则这些也必须包含在 MANIFEST.in 中。
     # package_data={
-    #     'sample': ['package_data.dat'],
+    #     'names_data': ['data/names.dat'],
     # },
 
-    # Although 'package_data' is the preferred approach, in some case you may
-    # need to place data files outside of your packages. See:
-    # http://docs.python.org/3.4/distutils/setupscript.html#installing-additional-files # noqa
-    # In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
-    # data_files=[('my_data', ['data/data_file'])],
+    # 尽管“package_data”是首选方法，但在某些情况下，您可能需要将数据文件放在包之外。
+    # See: http://docs.python.org/3.4/distutils/setupscript.html#installing-additional-files
+    # 数据{python-home}/Lib/site-packages/组件.egg/数据文件相对路径目录
+    # data_files=[
+    #     # ('数据文件相对路径目录', ['源文件文件路径']),
+    #     ('data', ['data/names.dat'])
+    # ],
 
+    license='MIT',
     classifiers=[
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers

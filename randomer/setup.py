@@ -23,7 +23,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'randomer'
-VERSION = '0.0.6'
+VERSION = '0.0.7'
 DESCRIPTION = '一个随机数操作工具类。'
 URL = 'https://github.com/kancyframework/python-plugins/tree/main/randomer'
 EMAIL = '793272861@qq.com'
@@ -36,12 +36,12 @@ SINGLE_EXTRAS_MODULES = [
 
 # 强制的依赖包
 REQUIRED = [
-    # 'pytest-shutil'
+
 ]
 
 # 可选的依赖包
 EXTRAS = {
-    # 'shutil feature': ['shutil'],
+
 }
 
 # 控制台脚本小工具
@@ -218,10 +218,10 @@ setup(
     # 尽管“package_data”是首选方法，但在某些情况下，您可能需要将数据文件放在包之外。
     # See: http://docs.python.org/3.4/distutils/setupscript.html#installing-additional-files
     # 数据{python-home}/Lib/site-packages/组件.egg/数据文件相对路径目录
-    data_files=[
-        # ('数据文件相对路径目录', ['源文件文件路径']),
-        ('data', ['data/names.dat'])
-    ],
+    # data_files=[
+    #     # ('数据文件相对路径目录', ['源文件文件路径']),
+    #     ('data', ['data/names.dat'])
+    # ],
 
     classifiers=[
         # Trove classifiers

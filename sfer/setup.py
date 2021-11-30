@@ -23,7 +23,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'sfer'
-VERSION = '0.0.2'
+VERSION = '0.0.3'
 DESCRIPTION = '一个算法操作工具类。'
 URL = 'https://github.com/kancyframework/python-plugins/tree/main/sfer'
 EMAIL = '793272861@qq.com'
@@ -36,12 +36,12 @@ SINGLE_EXTRAS_MODULES = [
 
 # 强制的依赖包
 REQUIRED = [
-    # 'pytest-shutil'
+    'rsa','pycryptodomex'
 ]
 
 # 可选的依赖包
 EXTRAS = {
-     'aes feature': ['pycryptodomex'],
+
 }
 
 # 控制台脚本小工具
