@@ -1,14 +1,3 @@
-import base64
-import datetime
-import hashlib
-import hmac
-import re
-import time
-import os
-
-import requests
-
-
 class DingTalkClient:
     """
     dingTalkClient = DingTalkClient(accessToken,secretKey)
@@ -74,10 +63,12 @@ class DingTalkClient:
         :param templateVariables: 模板变量
         :return:
         """
+        import os
         if os.path.exists(filePath) and os.path.isfile(filePath):
             with open(filePath, 'r', encoding=encoding) as f:
                 markdownFileData = f.read()
             if len(markdownFileData.strip()) > 0:
+                import datetime
                 newTemplateVariables = dict(templateVariables)
                 newTemplateVariables['__title'] = title
                 newTemplateVariables['__filePath'] = os.path.abspath(filePath)
@@ -174,10 +165,12 @@ class DingTalkClient:
         :param templateVariables: 模板文件变量
         :return:
         """
+        import os
         if os.path.exists(filePath) and os.path.isfile(filePath):
             with open(filePath, 'r', encoding=encoding) as f:
                 markdownFileData = f.read()
             if len(markdownFileData.strip()) > 0:
+                import datetime
                 newTemplateVariables = dict(templateVariables)
                 newTemplateVariables['__title'] = title
                 newTemplateVariables['__filePath'] = os.path.abspath(filePath)
@@ -233,6 +226,7 @@ class DingTalkClient:
         :param headers: 请求头
         :return:
         """
+        import requests
         if not headers:
             headers = {"Content-Type": "application/json ;charset=utf-8 "}
         url = self.__getServiceUrl()
@@ -244,6 +238,11 @@ class DingTalkClient:
     def getServiceUrl(self, accessToken: str, secretKey: str = None) -> str:
         url = f"https://oapi.dingtalk.com/robot/send?access_token={accessToken}"
         if secretKey:
+            import re
+            import hashlib
+            import hmac
+            import time
+            import base64
             # 加密，获取sign和timestamp
             timestamp = int(round(time.time() * 1000))
             secretDataBytes = (str(timestamp) + '\n' + self.secretKey).encode('utf-8')
@@ -291,7 +290,7 @@ class DingTalker:
     """
 
     def __init__(self, configFilePath: str = None, encoding="utf-8") -> None:
-        import confer
+        import confer, os
 
         if not configFilePath:
             userHome = str(os.path.expanduser('~')).replace("\\", "/")
@@ -309,10 +308,14 @@ class DingTalker:
         self.encoding = encoding
         self.dingTalkClients = {}
         self.configFilePath = None
-        self.confer = None
+        self.__confer = None
         if configFilePath:
             self.configFilePath = configFilePath
-            self.confer = confer.Confer(configFilePath, encoding)
+            self.__confer = confer.Confer(configFilePath, encoding)
+
+    def getClientNames(self):
+        """Return a list of client names, excluding [DEFAULT]"""
+        return self.__confer.config.sections()
 
     def sendText(self, client: str, content: str, at: (list, set, tuple, str) = None, atAll: bool = False,
                  headers=None):
@@ -474,19 +477,24 @@ class DingTalker:
         return dingTalkClient
 
     def __initDingTalkClient(self, client) -> DingTalkClient:
-        if not self.confer or not self.confer.has(client):
+        if not self.__confer or not self.__confer.has(client):
             raise RuntimeError(f"Not Found client {client}")
-        accessToken = self.confer.get(client, 'accessToken')
-        secretKey = self.confer.get(client, 'secretKey')
+        accessToken = self.__confer.get(client, 'accessToken')
+        secretKey = self.__confer.get(client, 'secretKey')
         if accessToken and secretKey:
-            encoding = self.confer.get(client, 'encoding', self.encoding)
-            debug = self.confer.getBoolean(client, 'debug', False)
+            encoding = self.__confer.get(client, 'encoding', self.encoding)
+            debug = self.__confer.getBoolean(client, 'debug', False)
             dingTalkClient = DingTalkClient(accessToken, secretKey, encoding, debug)
             return dingTalkClient
         raise RuntimeError(f"In {self.configFilePath} , Not Found client {client} -> accessToken and secretKey")
 
 
 __dingTalker = DingTalker()
+
+
+def getClientNames():
+    """Return a list of client names, excluding [DEFAULT]"""
+    return __dingTalker.getClientNames()
 
 
 def sendText(client: str, content: str, at: (list, set, tuple, str) = None, atAll: bool = False,
