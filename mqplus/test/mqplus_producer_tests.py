@@ -1,6 +1,6 @@
 import mqplus
 
-producer = mqplus.RabbitProducer("docker.kancy.top", "root", "root123")
-producer.putMessage("test", "pika.test.queue")
-producer.putMessage("test", "pika2.test.queue")
-producer.putMessage("test", "pika3.test.queue")
+producer = mqplus.getRabbitProducer("192.168.0.105", "root", "root123")
+producer.putQueue("test", "pika.test.queue")
+producer.putQueue("test", "pika2.test.queue")
+producer.putQueue("test", "pika3.test.queue")

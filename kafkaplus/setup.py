@@ -22,31 +22,31 @@ from setuptools import find_packages, setup, Command
 # 卸载本地模块：pip uninstall xxx
 
 # Package meta-data.
-NAME = 'mqplus'
-VERSION = '0.0.2'
-DESCRIPTION = 'MQ消息工具（生产者、消费者封装）。'
-URL = 'https://github.com/kancyframework/python-plugins/tree/main/mqplus'
+NAME = 'kafkaplus'
+VERSION = '0.0.1'
+DESCRIPTION = 'Kafka操作工具。'
+URL = 'https://github.com/kancyframework/python-plugins/tree/main/kafkaplus'
 EMAIL = '793272861@qq.com'
 AUTHOR = 'kancy'
 
 # 额外单独模块
 SINGLE_EXTRAS_MODULES = [
-    'mqplus'
+    'kafkaplus'
 ]
 
 # 强制的依赖包
 REQUIRED = [
-    'pika'
+    'kafka','kafka-python'
 ]
 
 # 可选的依赖包
 EXTRAS = {
-    'threading feature': ['threading'],
+   # 'threading feature': ['threading'],
 }
 
 # 控制台脚本小工具
 CONSOLE_SCRIPTS = [
-    # 'mqplus=mqplus:main',
+    # 'kafkaplus=kafkaplus:main',
 ]
 
 

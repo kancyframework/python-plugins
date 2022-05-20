@@ -4,9 +4,9 @@
 
 1) 生产者
 ```python
-import mqplus
+import rabbitplus
 
-producer = mqplus.RabbitProducer("docker.kancy.top", "root", "root123")
+producer = rabbitplus.RabbitProducer("docker.kancy.top", "root", "root123")
 producer.putQueue("test", "pika.test.queue")
 
 # 注册交换机
@@ -22,12 +22,12 @@ producer.bind("pika.test.exchange", "pika.test.queue")
 
 2) 消费者
 ```python
-import mqplus
+import rabbitplus
 
 def handle_message(data, **kwargs):
     print(kwargs)
 
-consumer = mqplus.RabbitConsumer("docker.kancy.top", "root", "root123")
+consumer = rabbitplus.RabbitConsumer("docker.kancy.top", "root", "root123")
 consumer.onListener("pika.test.queue", callback=handle_message)
 
 ```
