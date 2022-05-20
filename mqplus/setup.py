@@ -36,7 +36,7 @@ SINGLE_EXTRAS_MODULES = [
 
 # 强制的依赖包
 REQUIRED = [
-    'pika'
+    'rabbitplus','kafkaplus'
 ]
 
 # 可选的依赖包
