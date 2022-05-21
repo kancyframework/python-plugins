@@ -221,3 +221,28 @@ def dict2obj(mapping: dict, obj):
     except:
         pass
     return obj
+
+
+def async_call(fn):
+    """
+    异步调用
+    加在需要异步执行的方法上
+    :param fn:
+    :return:
+    """
+    import threading
+
+    def wrapper(*args, **kwargs):
+        threading.Thread(target=fn, args=args, kwargs=kwargs).start()
+
+    return wrapper
+
+
+def sleep(secs: int):
+    """
+    睡眠
+    :param secs: 秒数
+    :return:
+    """
+    import time
+    time.sleep(secs)

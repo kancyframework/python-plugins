@@ -1,4 +1,4 @@
-def fcolor(msg, m=0, fg=None, bg=None):
+def _fcolor(msg, m=0, fg=None, bg=None):
     """
     格式化颜色字符串
     :param msg: 文本下次
@@ -75,8 +75,8 @@ class Logger(object):
         level = level.upper()
         pid = os.getpid()
         datetimeStr = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-        pidStr = fcolor(pid, fg=35)
-        levelStr = fcolor("%5s" % level, m=1)
+        pidStr = _fcolor(pid, fg=35)
+        levelStr = _fcolor("%5s" % level, m=1)
         threadName = threading.currentThread().getName().lower()
 
         f = sys._getframe().f_back
@@ -96,13 +96,13 @@ class Logger(object):
 
         colorMsg = msg
         if level == 'ERROR' or level == 'FAIL':
-            colorMsg = fcolor(msg, fg=31)
+            colorMsg = _fcolor(msg, fg=31)
         if level == 'WARN':
-            colorMsg = fcolor(msg, fg=33)
+            colorMsg = _fcolor(msg, fg=33)
         if level == 'OK' or level == 'SUCCESS':
-            colorMsg = fcolor(msg, fg=32)
+            colorMsg = _fcolor(msg, fg=32)
         if level == 'DEBUG':
-            colorMsg = fcolor(msg, fg=37)
+            colorMsg = _fcolor(msg, fg=37)
 
         tagStr = ""
         if self.__tag and len(self.__tag) > 0:
@@ -112,8 +112,8 @@ class Logger(object):
             color = self.__color
         if color:
             colorLog = "%s %s %s <%s> - [%s:%s:%s]%s : %s" % (
-                datetimeStr, levelStr, pidStr, fcolor(threadName, fg=34), fcolor(fileName, fg=36), methodName, lineNo,
-                fcolor(tagStr, 1), colorMsg)
+                datetimeStr, levelStr, pidStr, _fcolor(threadName, fg=34), _fcolor(fileName, fg=36), methodName, lineNo,
+                _fcolor(tagStr, 1), colorMsg)
             print(colorLog)
             if self.__file:
                 log = "%s %5s %s <%s> - [%s:%s:%s]%s : %s" % (
