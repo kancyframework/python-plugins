@@ -178,7 +178,7 @@ class DB(object):
             self.__printSql(sqlScript, None, st)
             cursor.close()
 
-    def executeScriptFile(self, sqlScriptFilePath: str, commit=True, **variables):
+    def executeScriptFile(self, sqlScriptFilePath: str, *params, commit=True, **variables):
         """
         执行SQL脚本文件
         :param sqlScriptFilePath: sql脚本文件路径
@@ -190,7 +190,7 @@ class DB(object):
             with open(sqlScriptFilePath, 'r') as f:
                 sqlScript = f.read()
             if sqlScript and len(sqlScript) > 0:
-                return self.executeScript(sqlScript, commit, **variables)
+                return self.executeScript(sqlScript, *params, commit, **variables)
 
     def execute(self, sql, *parameters, commit=True, **kwargs):
         """
