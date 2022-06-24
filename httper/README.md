@@ -6,8 +6,8 @@
 import httper
 
 params = {
-    "a" : 1,
-    "b" : 2
+    "a": 1,
+    "b": 2
 }
 
 # 发送get请求
@@ -31,15 +31,17 @@ httper.getFile("http://localhost:8080/test/getFile?id=1", "test.py", progress=Tr
 httper.postFile("http://localhost:8080/test/postFile?id=1", "test.py")
 httper.postFile("http://localhost:8080/test/postFile?id=1", "test.py", progress=True)
 
-httper.downloadFile("http://localhost:8080/test/postFile?id=1", "test.py")
-httper.downloadFile("http://localhost:8080/test/postFile?id=1", "test.py", progress=True)
+httper.downloadFile("http://localhost:8080/test/downloadFile?id=1", "test.py")
+httper.downloadFile("http://localhost:8080/test/downloadFile?id=1", "test.py", progress=True)
 
 # 上传文件
 httper.uploadFile("http://localhost:8080/test/uploadFile?id=1", "file1", "./files/test.py")
 httper.uploadFile("http://localhost:8080/test/uploadFile?id=1", "file1", open("./files/test.py"))
 httper.uploadFile("http://localhost:8080/test/uploadFile?id=1", name="file1", file="[fileBytes]", fname="test.py")
-httper.uploadFile("http://localhost:8080/test/uploadFile?id=1", name="file1", file= ("", open("./files/test.py", "rb"), "image/jpeg", {"refer" : "localhost"}))
-httper.uploadFile("http://localhost:8080/test/uploadFile?id=1", name="file1", file= ("new_filename.py", open("./files/test.py", "rb"), "image/jpeg", {"refer" : "localhost"}))
+httper.uploadFile("http://localhost:8080/test/uploadFile?id=1", name="file1",
+                  file=("", open("./files/test.py", "rb"), "image/jpeg", {"refer": "localhost"}))
+httper.uploadFile("http://localhost:8080/test/uploadFile?id=1", name="file1",
+                  file=("new_filename.py", open("./files/test.py", "rb"), "image/jpeg", {"refer": "localhost"}))
 
-httper.uploadImage("http://localhost:8080/test/uploadFile?id=1", "file2", "./files/img1.py")
+httper.uploadImage("http://localhost:8080/test/uploadImage?id=1", "file2", "./files/img1.py")
 ```
