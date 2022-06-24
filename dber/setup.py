@@ -23,7 +23,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'dber'
-VERSION = '0.0.2'
+VERSION = '0.0.4'
 DESCRIPTION = '数据库操作工具。'
 URL = 'https://github.com/kancyframework/python-plugins/tree/main/dber'
 EMAIL = '793272861@qq.com'

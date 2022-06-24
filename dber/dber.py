@@ -155,6 +155,43 @@ class DB(object):
             self.__printSql(sql, parameters, st)
             cursor.close()
 
+    def executeScript(self, sqlScript: str, *params, commit=True, **variables):
+        """
+        执行SQL脚本
+        :param sqlScript: sql脚本
+        :param commit: 自动提交
+        :return:
+        """
+        try:
+            sqlScript = sqlScript.format_map(variables)
+        except:
+            pass
+
+        st = time.time()
+        cursor = self.getConnection().cursor()
+        try:
+            res = cursor.executescript(sqlScript, *params)
+            if commit or commit > 0:
+                self.commit()
+            return res
+        finally:
+            self.__printSql(sqlScript, None, st)
+            cursor.close()
+
+    def executeScriptFile(self, sqlScriptFilePath: str, commit=True, **variables):
+        """
+        执行SQL脚本文件
+        :param sqlScriptFilePath: sql脚本文件路径
+        :param commit: 自动提交
+        :return:
+        """
+        import os
+        if os.path.exists(sqlScriptFilePath) and os.path.isfile(sqlScriptFilePath):
+            with open(sqlScriptFilePath, 'r') as f:
+                sqlScript = f.read()
+            if sqlScript and len(sqlScript) > 0:
+                return self.executeScript(sqlScript, commit, **variables)
+
     def execute(self, sql, *parameters, commit=True, **kwargs):
         """
         执行SQL
@@ -169,9 +206,10 @@ class DB(object):
         parameters = self.__parameters(*parameters)
         cursor = self.getConnection().cursor()
         try:
-            cursor.execute(sql, parameters, **kwargs)
+            res = cursor.execute(sql, parameters, **kwargs)
             if commit or commit > 0:
                 self.commit()
+            return res
         finally:
             self.__printSql(sql, parameters, st)
             cursor.close()
@@ -185,7 +223,7 @@ class DB(object):
         :param kwargs: 其他配置
         :return:
         """
-        self.execute(sql, *parameters, commit=commit, **kwargs)
+        return self.execute(sql, *parameters, commit=commit, **kwargs)
 
     def insert(self, sql, *parameters, commit=True, **kwargs):
         """
@@ -517,37 +555,6 @@ class SQLite(DB):
         self.__connection.row_factory = self.__dict_factory
         super().__init__(self.__connection, debug=self.__debug, dbType='sqlite')
 
-    def executeScript(self, sqlScript: str, commit=True):
-        """
-        执行SQL脚本
-        :param sqlScript: sql脚本
-        :param commit: 自动提交
-        :return:
-        """
-        st = time.time()
-        cursor = self.getConnection().cursor()
-        try:
-            cursor.executescript(sqlScript)
-            if commit or commit > 0:
-                self.commit()
-        finally:
-            self._DB__printSql(sqlScript, None, st)
-            cursor.close()
-
-    def executeScriptFile(self, sqlScriptFilePath: str, commit=True):
-        """
-        执行SQL脚本文件
-        :param sqlScriptFilePath: sql脚本文件路径
-        :param commit: 自动提交
-        :return:
-        """
-        import os
-        if os.path.exists(sqlScriptFilePath) and os.path.isfile(sqlScriptFilePath):
-            with open(sqlScriptFilePath, 'r') as f:
-                sqlScript = f.read()
-            if sqlScript and len(sqlScript) > 0:
-                self.executeScript(sqlScript, commit)
-
     def getBusinessDatabaseNames(self) -> list[str]:
         """
         获取业务数据库名称
@@ -596,15 +603,32 @@ class MySQL(DB):
                  debug: bool = False,
                  **config) -> None:
         import pymysql
+        from pymysql.constants import CLIENT
+
         self.__host = host
         self.__username = username
         self.__password = password
         self.__database = database
         self.__charset = charset
         self.__debug = debug
+
+        # 支持多条语句执行
+        # https://stackoverflow.com/questions/58544640/pymysql-unable-to-execute-multiple-queries
+        if config.__contains__("client_flag"):
+            config['client_flag'] |= CLIENT.MULTI_STATEMENTS
+        else:
+            config['client_flag'] = CLIENT.MULTI_STATEMENTS
+
         self.__connection = pymysql.connect(host=host, port=port, user=username, password=password, database=database,
                                             charset=charset, cursorclass=pymysql.cursors.DictCursor, **config)
         super().__init__(self.__connection, debug=self.__debug, dbType='mysql')
+
+    def executeScript(self, sqlScript: str, *params, commit=True, **variables):
+        try:
+            sqlScript = sqlScript.format_map(variables)
+        except:
+            pass
+        return self.execute(sqlScript, *params, commit=commit)
 
     def setDatabase(self, database: str):
         self.__connection.select_db(database)
