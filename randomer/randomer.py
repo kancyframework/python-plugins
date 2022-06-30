@@ -101,6 +101,20 @@ def randomChars(size: int, distinct=False) -> str:
     return "".join([chr(item) for item in rItems])
 
 
+def randomNumberStr(size: int, distinct=False) -> str:
+    """
+    随机生成指定长度的数字字符串
+    :param size:
+    :param distinct:
+    :return:
+    """
+    items = []
+    items.extend(range(0, 10))
+    random.shuffle(items)
+    rItems = randomItems(items, size, distinct)
+    return "".join([str(item) for item in rItems])
+
+
 def randomMobile(*pres) -> str:
     """
     随机生成手机号
